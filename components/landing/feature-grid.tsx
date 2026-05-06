@@ -1,60 +1,98 @@
-import Link from "next/link"
-import { ArrowRight, HeartPulse, Activity, BrainCircuit } from "lucide-react"
+"use client";
+
+import { Target, FileCheck, Shield, Search, FileJson, Languages } from "lucide-react";
+import { useIntersection } from "@/hooks/use-intersection";
+import { cn } from "@/lib/utils";
 
 const FEATURES = [
-  { 
-    title: "Patient App", 
-    icon: HeartPulse, 
-    color: "text-emerald-500", 
-    bg: "bg-emerald-500/10", 
-    border: "hover:border-emerald-500/50", 
-    shadow: "hover:shadow-emerald-500/20", 
-    desc: "Get matched to clinical trials that fit your condition. Simplified consent and support.", 
-    href: "/register" 
+  {
+    icon: Target,
+    title: "Smart Matching",
+    description:
+      "AI matches patients to trials using cosine similarity scoring against eligibility criteria.",
   },
-  { 
-    title: "Coordinator Dashboard", 
-    icon: Activity, 
-    color: "text-sky-500", 
-    bg: "bg-sky-500/10", 
-    border: "hover:border-sky-500/50", 
-    shadow: "hover:shadow-sky-500/20", 
-    desc: "Real-time patient monitoring with RAG risk indicators, dropout prediction, and more.", 
-    href: "/coordinator/login" 
+  {
+    icon: FileCheck,
+    title: "Consent Simplified",
+    description:
+      "PDF consent forms converted to plain-English summaries with digital signature support.",
   },
-  { 
-    title: "Pharma Portal", 
-    icon: BrainCircuit, 
-    color: "text-indigo-500", 
-    bg: "bg-indigo-500/10", 
-    border: "hover:border-indigo-500/50", 
-    shadow: "hover:shadow-indigo-500/20", 
-    desc: "Post trial criteria and let AI handle candidate discovery, fraud detection, and outreach.", 
-    href: "/pharma/login" 
+  {
+    icon: Shield,
+    title: "Dropout Prevention",
+    description:
+      "Daily engagement scoring with automated re-engagement via SMS and email for at-risk patients.",
   },
-]
+  {
+    icon: Search,
+    title: "Anomaly Detection",
+    description:
+      "Z-score biometric outlier detection for heart rate, glucose, blood pressure, and more.",
+  },
+  {
+    icon: FileJson,
+    title: "FHIR Export",
+    description:
+      "HL7 FHIR R4 standard data export including Patient, Condition, Observation, and Medication resources.",
+  },
+  {
+    icon: Languages,
+    title: "Multilingual",
+    description:
+      "Support for 9+ languages via NLLB-200 and GPT translation for inclusive global recruitment.",
+  },
+];
 
 export function FeatureGrid() {
+  const { ref, isVisible } = useIntersection({ threshold: 0.1 });
+
   return (
-    <section className="relative z-10 py-24 px-6 max-w-7xl mx-auto">
-      <div className="text-center mb-16">
-        <h2 className="text-4xl font-bold tracking-tight">Three Portals, One Platform</h2>
-        <p className="mt-4 text-xl text-muted-foreground">Unified access for everyone involved in clinical trials.</p>
-      </div>
-      <div className="grid md:grid-cols-3 gap-8">
-        {FEATURES.map((item) => (
-          <div key={item.title} className={`group relative rounded-3xl border border-border/40 bg-card/40 p-8 backdrop-blur-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl ${item.border} ${item.shadow}`}>
-            <div className={`mb-6 inline-flex p-4 rounded-2xl ${item.bg} transition-transform group-hover:scale-110`}>
-              <item.icon className={`size-8 ${item.color}`} />
+    <section ref={ref} className="relative z-10 py-24 px-6">
+      <div className="mx-auto max-w-6xl">
+        {/* Heading */}
+        <div className="mb-16 text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-[var(--text-primary)] sm:text-4xl">
+            Everything You Need for Trial Success
+          </h2>
+          <p className="mt-4 text-lg text-[var(--text-muted)]">
+            Comprehensive tools for patients, coordinators, and pharma teams
+          </p>
+        </div>
+
+        {/* Grid */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map((feature, i) => (
+            <div
+              key={feature.title}
+              className={cn(
+                "group rounded-2xl border border-[var(--border-default)] bg-[var(--surface-primary)] p-8 transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--secondary-200)] hover:shadow-[var(--shadow-blue)] dark:bg-slate-800 dark:hover:border-[var(--secondary-600)]",
+                isVisible
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              )}
+              style={{ transitionDelay: `${i * 50}ms` }}
+            >
+              {/* Icon */}
+              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--secondary-50)] transition-transform group-hover:scale-110 dark:bg-[var(--secondary-100)]">
+                <feature.icon className="h-6 w-6 text-[var(--secondary-600)]" />
+              </div>
+
+              {/* Title */}
+              <h3 className="text-lg font-semibold text-[var(--text-primary)]">
+                {feature.title}
+              </h3>
+
+              {/* Description */}
+              <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">
+                {feature.description}
+              </p>
+
+              {/* Hover accent */}
+              <div className="mt-4 h-0.5 w-0 rounded-full bg-[var(--secondary-500)] transition-all duration-300 group-hover:w-12" />
             </div>
-            <h3 className="text-2xl font-bold mb-3">{item.title}</h3>
-            <p className="text-muted-foreground leading-relaxed mb-8">{item.desc}</p>
-            <Link href={item.href} className={`inline-flex items-center font-semibold ${item.color} group-hover:underline underline-offset-4 decoration-2`}>
-              Explore portal <ArrowRight className="ml-1 size-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
-  )
+  );
 }

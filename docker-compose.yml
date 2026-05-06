@@ -1,6 +1,22 @@
 version: "3.8"
 
 services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: trialgo_user
+      POSTGRES_PASSWORD: trialgo_pass
+      POSTGRES_DB: trialgo
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trialgo_user -d trialgo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   redis:
     image: redis:7-alpine
     ports:
@@ -20,10 +36,13 @@ services:
     env_file:
       - ./backend/.env
     environment:
+      - DATABASE_URL=postgresql://trialgo_user:trialgo_pass@postgres:5432/trialgo
       - REDIS_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - FRONTEND_URL=http://localhost:3000
     depends_on:
+      postgres:
+        condition: service_healthy
       redis:
         condition: service_healthy
     healthcheck:
@@ -41,6 +60,7 @@ services:
     env_file:
       - ./backend/.env
     environment:
+      - DATABASE_URL=postgresql://trialgo_user:trialgo_pass@postgres:5432/trialgo
       - REDIS_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
@@ -57,6 +77,7 @@ services:
     env_file:
       - ./backend/.env
     environment:
+      - DATABASE_URL=postgresql://trialgo_user:trialgo_pass@postgres:5432/trialgo
       - REDIS_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
@@ -78,3 +99,6 @@ services:
     depends_on:
       backend:
         condition: service_healthy
+
+volumes:
+  postgres_data:
