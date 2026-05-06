@@ -102,15 +102,23 @@ def filter_trials_with_llm(patient_profile: dict, raw_trials: list) -> list:
 
     # 2. Process all trials in manageable chunks (keeps prompts reliable while covering all sources)
     chunk_size = 25
-
     # 3. Define Strict Antigravity System Prompt
     system_prompt = """You are the Antigravity Clinical Matching AI.
 Your goal is to perform deep medical reasoning to match patients to global trials.
 
 MATCHING RULES:
-1. ACCURACY FIRST: Only match if the trial explicitly treats the patient's condition subtype.
-2. DISCARD NOISE: If a patient has "Leukemia" and the trial is for "Blood Pressure", DISCARD it.
-3. REASONING: Provide a 'match_reason' (why it matches) and 'concerns' (contraindications or missing data).
+1. PERFECT CONDITION MATCH: The trial MUST treat the patient's specific condition.
+   - YES: "Leukemia" matches "Blood Cancer" (synonym).
+   - YES: "Breast Cancer" matches "Breast Cancer" (exact).
+   - NO: "Blood Pressure" does NOT match "Blood Cancer".
+   - NO: "Cancer" alone is TOO GENERIC for "Blood Cancer".
+   - NO: "Blood Disorder" is TOO GENERIC for "Leukemia".
+2. STAGE/PHASE ALIGNMENT:
+   - If a patient specifies a Stage (e.g., Stage 4), the trial must be appropriate for that stage.
+   - Do NOT confuse "Stage 4" (patient severity) with "Phase 4" (trial marketing phase) unless they are medically compatible.
+3. NO PARTIAL KEYWORD MATCHES:
+   - Rejection is mandatory if the match is only based on a single shared word like "blood" or "cancer" while the actual conditions differ.
+4. MEDICAL SYNONYMS: Use clinical knowledge to identify synonyms (e.g., "NSCLC" = "Non-Small Cell Lung Cancer").
 
 OUTPUT SCHEMA (STRICT JSON ARRAY ONLY):
 [
@@ -118,9 +126,9 @@ OUTPUT SCHEMA (STRICT JSON ARRAY ONLY):
     "index": integer,
     "match_score": float (0.0 to 1.0),
     "match_tier": "HIGH" | "MEDIUM" | "LOW",
-    "match_reason": "...",
-    "why_relevant": "...",
-    "concerns": "..." | null
+    "match_reason": "Specific medical reason for matching",
+    "why_relevant": "Why this trial helps this specific patient",
+    "concerns": "Any medical contradictions or stage mismatches" | null
   }}
 ]
 
@@ -128,9 +136,6 @@ If no trials match, return []. Do not include any text outside the JSON array.""
 
     final_output = []
     seen_trials = set()
-    condition_terms = _extract_terms(
-        f"{patient_profile.get('primary_condition', '')} {patient_profile.get('condition_stage', '')}"
-    )
     try:
         llm = get_fallback_llm(model_type="fast", temperature=0)
         prompt = ChatPromptTemplate.from_messages([
@@ -148,11 +153,10 @@ TRIAL_ID: {i}
 Title: {t.get('trial_name')}
 Condition: {t.get('condition')}
 Phase: {t.get('phase')}
-Summary: {t.get('eligibility_summary', '')[:300]}
+Summary: {t.get('eligibility_summary', '')[:500]}
 Source: {t.get('source_database')}
 ---"""
 
-            llm_matched_indexes = set()
             try:
                 response = chain.invoke({
                     "patient_md": patient_md,
@@ -183,13 +187,15 @@ Source: {t.get('source_database')}
                     idx = m.get("index")
                     if idx is None or not (0 <= idx < len(processed_trials)):
                         continue
+                    
+                    score = _coerce_score(m.get("match_score", 0.0))
+                    # Only include trials that the LLM explicitly scored > 0
+                    if score <= 0.1:
+                        continue
+
                     source_trial = processed_trials[idx]
                     trial_key = _trial_key(source_trial)
                     if trial_key in seen_trials:
-                        continue
-
-                    score = _coerce_score(m.get("match_score", 0.0))
-                    if score <= 0:
                         continue
 
                     raw_tier = str(m.get("match_tier", "")).upper()
@@ -204,43 +210,13 @@ Source: {t.get('source_database')}
                         "concerns": m.get("concerns")
                     })
                     seen_trials.add(trial_key)
-                    llm_matched_indexes.add(idx)
             except Exception as chunk_error:
                 print(f"[Antigravity-LLM] Chunk parse failed at offset {offset}: {chunk_error}")
 
-            # Backfill within each chunk so one strict/empty LLM response does not hide other database matches.
-            if condition_terms:
-                for idx, source_trial in enumerate(processed_trials):
-                    if idx in llm_matched_indexes:
-                        continue
-                    trial_key = _trial_key(source_trial)
-                    if trial_key in seen_trials:
-                        continue
-
-                    haystack = _trial_haystack(source_trial)
-                    hit_count = sum(1 for term in condition_terms if term in haystack)
-                    if hit_count == 0:
-                        continue
-
-                    score = min(0.7, 0.28 + (0.1 * hit_count))
-                    if score < 0.3:
-                        continue
-
-                    final_output.append({
-                        **source_trial,
-                        "match_score": score,
-                        "match_tier": _tier_from_score(score),
-                        "match_reason": f"Keyword overlap on: {', '.join(sorted(condition_terms)[:4])}",
-                        "why_relevant": "Matched disease terms from your profile in trial title/summary.",
-                        "concerns": "Added by deterministic fallback because LLM chunk was strict/empty.",
-                    })
-                    seen_trials.add(trial_key)
     except Exception as e:
         print(f"[Antigravity-LLM] Filter failed: {e}")
-        return _fallback_filter(patient_profile, raw_trials)
-
-    if not final_output:
-        return _fallback_filter(patient_profile, raw_trials)
+        return [] # Return empty instead of loose fallback
 
     final_output.sort(key=lambda x: x["match_score"], reverse=True)
     return final_output
+

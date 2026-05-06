@@ -33,9 +33,6 @@ TRIAL_DATABASES = [
     "name": "DRKS Germany", "url": "https://drks.de", "api_url": "https://drks.de/search/en", "method": "scrape", "search_param": "query"
   },
   {
-    "name": "UMIN Japan", "url": "https://umin.ac.jp", "api_url": "https://upload.umin.ac.jp/cgi-open-bin/ctr_e/ctr_search.cgi", "method": "scrape", "search_param": "query"
-  },
-  {
     "name": "Netherlands Trial Register", "url": "https://www.trialregister.nl", "api_url": "https://api.trialregister.nl/trials", "method": "api", "search_param": "q"
   },
   {

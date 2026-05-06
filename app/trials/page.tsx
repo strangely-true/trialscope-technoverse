@@ -57,7 +57,6 @@ const DATABASE_CATALOG: Array<{ name: string; url: string }> = [
   { name: "CTRI India", url: "https://ctri.nic.in" },
   { name: "ChiCTR China", url: "https://www.chictr.org.cn" },
   { name: "DRKS Germany", url: "https://drks.de" },
-  { name: "UMIN Japan", url: "https://umin.ac.jp" },
   { name: "Thai Clinical Trials", url: "https://www.thaiclinicaltrials.org" },
   { name: "Netherlands Trial Register", url: "https://www.trialregister.nl" },
   { name: "REBEC Brazil", url: "https://ensaiosclinicos.gov.br" },
@@ -218,7 +217,7 @@ export default function TrialsPage() {
       {/* Nav */}
       <nav className="flex items-center justify-between border-b border-slate-200 bg-white/95 px-6 py-4 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95">
         <Link href="/" className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-white">
-          <Image src="/trialgo.png" alt="TrialGo" width={28} height={28} className="h-7 w-7" />
+          <img src="/trialgo.png" alt="TrialGo" width={28} height={28} className="h-7 w-7" />
           Trial<span className="text-blue-600 dark:text-blue-400">Go</span>
         </Link>
         <div className="flex items-center gap-4">

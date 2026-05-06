@@ -17,7 +17,6 @@ GLOBAL_DATABASE_CATALOG = [
     {"name": "CTRI India", "url": "https://ctri.nic.in"},
     {"name": "ChiCTR China", "url": "https://www.chictr.org.cn"},
     {"name": "DRKS Germany", "url": "https://drks.de"},
-    {"name": "UMIN Japan", "url": "https://umin.ac.jp"},
     {"name": "Thai Clinical Trials", "url": "https://www.thaiclinicaltrials.org"},
     {"name": "Netherlands Trial Register", "url": "https://www.trialregister.nl"},
     {"name": "REBEC Brazil", "url": "https://ensaiosclinicos.gov.br"},
@@ -463,44 +462,6 @@ async def _drks(client, search_query):
     except Exception as e:
         print(f"[Scraper] DRKS error: {e}")
     return results, "DRKS Germany", "https://drks.de"
-
-
-async def _umin(client, search_query):
-    results = []
-    kw = "leukemia" if "blood cancer" in search_query.lower() else _safe_keyword(search_query)
-    try:
-        r = await client.get("https://upload.umin.ac.jp/cgi-open-bin/ctr_e/ctr_search.cgi",
-            params={"language": "E", "basic_01": kw, "basic_09": "1"},
-            headers=_site_headers(), timeout=25)
-        if r.status_code == 200:
-            soup = BeautifulSoup(r.text, "html.parser")
-            for a in soup.find_all("a", href=lambda h: h and "recptno" in str(h))[:3]:
-                title = a.get_text(strip=True)
-                href = a["href"]
-                url = _join_url("https://upload.umin.ac.jp", href)
-                if len(title) > 5:
-                    results.append(_trial_record(
-                        trial_name=title,
-                        external_trial_id=href,
-                        condition=kw,
-                        location="Japan",
-                        phase="Unknown",
-                        status="RECRUITING",
-                        eligibility_summary="UMIN Japan trial.",
-                        external_url=url,
-                    ))
-            if not results:
-                results = _generic_extract_trials(
-                    r.text,
-                    base_url="https://upload.umin.ac.jp",
-                    source_name="UMIN Japan",
-                    condition=kw,
-                    location="Japan",
-                    summary="Fallback HTML extraction.",
-                )
-    except Exception as e:
-        print(f"[Scraper] UMIN error: {e}")
-    return results, "UMIN Japan", "https://umin.ac.jp"
 
 
 async def _thai(client, search_query):
