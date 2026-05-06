@@ -17,7 +17,7 @@ export function PharmaSection() {
   const { ref, isVisible } = useIntersection({ threshold: 0.15 });
 
   return (
-    <section ref={ref} className="relative z-10 py-24 bg-white border-y border-slate-200">
+    <section ref={ref} className="relative z-10 py-24 bg-slate-50 border-y border-slate-200">
       <div className="mx-auto max-w-6xl px-6">
         <div className="grid items-center gap-12 md:grid-cols-2">
           {/* Left: Text */}
@@ -71,7 +71,7 @@ export function PharmaSection() {
                 : "opacity-0 translate-x-8"
             )}
           >
-            <div className="relative rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl shadow-slate-200/60">
+            <div className="relative rounded-2xl border border-white/40 bg-white/60 p-6 shadow-2xl shadow-slate-200/60 backdrop-blur-xl">
               {/* Mock dashboard header */}
               <div className="mb-4 flex items-center gap-2">
                 <div className="h-3 w-3 rounded-full bg-red-400" />
@@ -91,7 +91,7 @@ export function PharmaSection() {
                 ].map((stat) => (
                   <div
                     key={stat.label}
-                    className="rounded-lg border border-slate-100 bg-slate-50 p-3 text-center"
+                    className="rounded-lg border border-slate-200/50 bg-white/40 p-3 text-center backdrop-blur-sm transition-all hover:bg-white/60"
                   >
                     <p className="text-lg font-bold text-slate-900">
                       {stat.value}
@@ -104,11 +104,11 @@ export function PharmaSection() {
               </div>
 
               {/* Mock chart area */}
-              <div className="h-32 rounded-lg bg-gradient-to-t from-blue-50 to-transparent flex items-end px-4 pb-4 gap-2">
+              <div className="h-32 rounded-lg bg-gradient-to-t from-blue-500/10 to-transparent flex items-end px-4 pb-4 gap-2">
                 {[40, 55, 45, 70, 65, 80, 75, 90, 85, 95].map((h, i) => (
                   <div
                     key={i}
-                    className="flex-1 rounded-t bg-blue-500"
+                    className="flex-1 rounded-t bg-blue-500 transition-all hover:bg-blue-600"
                     style={{ height: `${h}%` }}
                   />
                 ))}

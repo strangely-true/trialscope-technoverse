@@ -15,7 +15,7 @@ export function HeroSection() {
     <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 pb-20 pt-36 text-center">
 
       {/* Badge pill */}
-      <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-5 py-2 text-sm font-medium text-blue-700 shadow-sm transition-transform hover:scale-105">
+      <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-blue-200/50 bg-white/40 px-5 py-2 text-sm font-medium text-blue-700 shadow-sm backdrop-blur-md transition-transform hover:scale-105">
         <Sparkles className="h-4 w-4" />
         The AI-Powered Clinical Matchmaker
       </div>
@@ -64,13 +64,13 @@ export function HeroSection() {
       {/* Impact metrics */}
       <div
         id="impact"
-        className="mt-20 grid w-full max-w-4xl grid-cols-1 overflow-hidden rounded-3xl border border-slate-200 bg-white/60 shadow-xl shadow-slate-200/50 backdrop-blur-xl sm:grid-cols-3"
+        className="mt-20 grid w-full max-w-4xl grid-cols-1 overflow-hidden rounded-3xl border border-slate-200/50 bg-white/40 shadow-2xl shadow-slate-200/20 backdrop-blur-xl sm:grid-cols-3"
       >
         {STATS.map((stat, i) => (
           <div
             key={stat.label}
-            className={`flex flex-col items-center justify-center px-8 py-10 transition-colors hover:bg-white/80 ${
-              i < STATS.length - 1 ? "border-b border-slate-200 sm:border-b-0 sm:border-r" : ""
+            className={`flex flex-col items-center justify-center px-8 py-10 transition-colors hover:bg-white/40 ${
+              i < STATS.length - 1 ? "border-b border-slate-200/30 sm:border-b-0 sm:border-r" : ""
             }`}
           >
             <p className="text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl">

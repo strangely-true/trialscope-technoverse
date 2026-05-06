@@ -71,12 +71,12 @@ export function HowItWorks() {
               style={{ transitionDelay: `${i * 200}ms` }}
             >
               {/* Step number circle */}
-              <div className="relative z-10 mb-6 flex h-12 w-12 items-center justify-center rounded-full border-2 border-blue-500 bg-white text-lg font-bold text-blue-600 shadow-sm transition-transform hover:scale-110">
+              <div className="relative z-10 mb-6 flex h-12 w-12 items-center justify-center rounded-full border border-blue-500/30 bg-white/60 text-lg font-bold text-blue-600 shadow-xl backdrop-blur-md transition-transform hover:scale-110">
                 {step.number}
               </div>
 
               {/* Icon */}
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/20 bg-white/40 shadow-xl backdrop-blur-md">
                 <step.icon className="h-8 w-8 text-blue-600" />
               </div>
 
