@@ -7,6 +7,9 @@ import { StatCard } from "@/components/ui/stat-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ProgressCounter } from "@/components/ui/animated-counter";
 import { ProgressRing } from "@/components/ui/progress-ring";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   ChartContainer,
   ChartTooltip,
@@ -15,7 +18,7 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell } from "recharts";
-import { Plus, FlaskConical, Users, AlertTriangle, Target, BarChart2 } from "lucide-react";
+import { Plus, FlaskConical, Users, AlertTriangle, Target, BarChart2, TrendingDown } from "lucide-react";
 import { toast } from "sonner";
 
 interface TrialSummary { id: number; title: string; disease: string; stage: string }
@@ -23,8 +26,14 @@ interface Analytics {
   enrolled: number; patients_needed: number; enrollment_rate_pct: number;
   risk_distribution: Record<string, number>; total_anomalies: number;
 }
+interface PatientWithRisk {
+  patient_id: number; hash_id: string; status: string; enrolled_at: string; match_score: number;
+  dropout_risk: { score: number | null; tier: string; days_since_login: number | null; symptom_logs_week: number | null; wearable_uploads_week: number | null; scored_at: string | null };
+  anomaly_alerts_count: number;
+}
 
 const RISK_PIE_COLORS: Record<string, string> = { RED: "#EF4444", AMBER: "#F59E0B", GREEN: "#10B981" };
+const RISK_BADGE_VARIANTS: Record<string, "default" | "destructive" | "secondary"> = { RED: "destructive", AMBER: "secondary", GREEN: "default" };
 
 const chartConfig = {
   RED: { label: "High Risk", color: "#EF4444" },
@@ -36,8 +45,10 @@ export default function PharmaAnalyticsPage() {
   const [trials, setTrials] = useState<TrialSummary[]>([]);
   const [selectedTrialId, setSelectedTrialId] = useState<number | null>(null);
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
+  const [patients, setPatients] = useState<PatientWithRisk[]>([]);
   const [loadingTrials, setLoadingTrials] = useState(true);
   const [loadingAnalytics, setLoadingAnalytics] = useState(false);
+  const [loadingPatients, setLoadingPatients] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("trialgo_token");
@@ -59,11 +70,20 @@ export default function PharmaAnalyticsPage() {
     const token = localStorage.getItem("trialgo_token");
     if (!token || !selectedTrialId) return;
     setLoadingAnalytics(true);
-    fetch(`/api/pharma/analytics/${selectedTrialId}`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.ok ? r.json() : null)
-      .then((d) => setAnalytics(d))
-      .catch(() => toast.error("Failed to load analytics"))
-      .finally(() => setLoadingAnalytics(false));
+    setLoadingPatients(true);
+
+    Promise.all([
+      fetch(`/api/pharma/analytics/${selectedTrialId}`, { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => r.ok ? r.json() : null),
+      fetch(`/api/pharma/patients/${selectedTrialId}/dropout-risk`, { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => r.ok ? r.json() : []),
+    ])
+      .then(([analytics, patientList]) => {
+        setAnalytics(analytics);
+        setPatients(Array.isArray(patientList) ? patientList : []);
+      })
+      .catch(() => toast.error("Failed to load data"))
+      .finally(() => { setLoadingAnalytics(false); setLoadingPatients(false); });
   }, [selectedTrialId]);
 
   const selected = trials.find((t) => t.id === selectedTrialId) ?? null;
@@ -208,6 +228,81 @@ export default function PharmaAnalyticsPage() {
                 </div>
               )}
             </div>
+
+            {/* Patient Dropout Risk Table */}
+            {patients.length > 0 && (
+              <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                <div className="mb-4 flex items-center gap-2">
+                  <TrendingDown className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                  <h2 className="text-base font-semibold text-slate-900 dark:text-white">Patient Dropout Risk</h2>
+                </div>
+                {loadingPatients ? (
+                  <div className="space-y-2">
+                    {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Patient ID</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Match Score</TableHead>
+                          <TableHead>Risk Tier</TableHead>
+                          <TableHead>Dropout Score</TableHead>
+                          <TableHead>Days Inactive</TableHead>
+                          <TableHead>Symptom Logs</TableHead>
+                          <TableHead>Wearable Uploads</TableHead>
+                          <TableHead>Anomalies</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {patients.map((p) => (
+                          <TableRow key={p.patient_id}>
+                            <TableCell className="font-mono text-sm">{p.hash_id.substring(0, 8)}...</TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="capitalize text-xs">
+                                {p.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>{(p.match_score * 100).toFixed(0)}%</TableCell>
+                            <TableCell>
+                              <Badge
+                                variant={RISK_BADGE_VARIANTS[p.dropout_risk.tier] || "default"}
+                                className="text-xs font-semibold"
+                              >
+                                {p.dropout_risk.tier}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="font-mono">
+                              {p.dropout_risk.score ? (p.dropout_risk.score * 100).toFixed(0) + "%" : "—"}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {p.dropout_risk.days_since_login ?? "—"}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {p.dropout_risk.symptom_logs_week ?? "—"}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {p.dropout_risk.wearable_uploads_week ?? "—"}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {p.anomaly_alerts_count > 0 ? (
+                                <Badge variant="destructive" className="text-xs">
+                                  {p.anomaly_alerts_count}
+                                </Badge>
+                              ) : (
+                                "—"
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Quick Actions */}
             <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">

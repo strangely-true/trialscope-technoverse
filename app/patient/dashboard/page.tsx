@@ -9,11 +9,19 @@ import { ProgressRing } from "@/components/ui/progress-ring";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { BookOpen, Activity, CheckCircle2, AlertCircle, Clock, HeartPulse, ChevronRight } from "lucide-react";
+import { BookOpen, Activity, CheckCircle2, AlertCircle, Clock, HeartPulse, ChevronRight, TrendingDown } from "lucide-react";
 
 interface Trial { id: number; title: string; disease: string; stage: string }
 interface VerifiedPatient { id: number; trial_id: number; status: string; match_score: number; enrolled_at: string }
 interface EnrolledTrial { patient: VerifiedPatient; trial: Trial }
+interface DropoutRisk {
+  trial_id: number;
+  risk_tier: string;
+  dropout_score: number;
+  days_since_login: number | null;
+  symptom_logs_week: number | null;
+  wearable_uploads_week: number | null;
+}
 
 const STATUS_BADGE: Record<string, { variant: "default" | "secondary" | "destructive" | "outline"; label: string }> = {
   enrolled: { variant: "default", label: "Enrolled" },
@@ -22,9 +30,16 @@ const STATUS_BADGE: Record<string, { variant: "default" | "secondary" | "destruc
   dropout_risk: { variant: "destructive", label: "At Risk" },
 };
 
+const RISK_COLORS: Record<string, string> = {
+  RED: "#EF4444",
+  AMBER: "#F59E0B",
+  GREEN: "#10B981",
+};
+
 export default function PatientDashboardPage() {
   const [enrolledTrials, setEnrolledTrials] = useState<EnrolledTrial[]>([]);
   const [userMe, setUserMe] = useState<any>(null);
+  const [dropoutRisks, setDropoutRisks] = useState<Record<number, DropoutRisk>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,14 +49,36 @@ export default function PatientDashboardPage() {
     Promise.all([
       fetch("/api/patient/my-trial-info", { headers: h }).then((r) => r.ok ? r.json() : []),
       fetch("/api/auth/me", { headers: h }).then((r) => r.ok ? r.json() : null),
+      fetch("/api/patient/dropout-risk", { headers: h }).then((r) => r.ok ? r.json() : { trials: [] }),
     ])
-      .then(([trials, user]) => { setEnrolledTrials(Array.isArray(trials) ? trials : []); setUserMe(user); })
+      .then(([trials, user, riskData]) => {
+        setEnrolledTrials(Array.isArray(trials) ? trials : []);
+        setUserMe(user);
+        // Map dropout risk by trial_id for quick lookup
+        const riskMap: Record<number, DropoutRisk> = {};
+        if (riskData.trials && Array.isArray(riskData.trials)) {
+          riskData.trials.forEach((t: any) => {
+            riskMap[t.trial_id] = {
+              trial_id: t.trial_id,
+              risk_tier: t.risk_tier,
+              dropout_score: t.dropout_score,
+              days_since_login: t.metrics?.days_since_login,
+              symptom_logs_week: t.metrics?.symptom_logs_week,
+              wearable_uploads_week: t.metrics?.wearable_uploads_week,
+            };
+          });
+        }
+        setDropoutRisks(riskMap);
+      })
       .finally(() => setLoading(false));
   }, []);
 
   const active = enrolledTrials.filter((t) => t.patient.status === "enrolled" || t.patient.status === "in_progress");
   const completed = enrolledTrials.filter((t) => t.patient.status === "completed");
-  const atRisk = enrolledTrials.filter((t) => t.patient.status === "dropout_risk");
+  const atRisk = enrolledTrials.filter((t) => {
+    const risk = dropoutRisks[t.trial.id];
+    return risk && (risk.risk_tier === "RED" || risk.risk_tier === "AMBER");
+  });
 
   return (
     <PageTransition>
@@ -126,6 +163,7 @@ export default function PatientDashboardPage() {
                 const statusCfg = STATUS_BADGE[patient.status] || STATUS_BADGE.enrolled;
                 const weeks = Math.floor((Date.now() - new Date(patient.enrolled_at).getTime()) / (7 * 24 * 3600 * 1000));
                 const matchPct = Math.round((patient.match_score || 0) * 100);
+                const riskData = dropoutRisks[trial.id];
 
                 return (
                   <Link key={`${trial.id}-${patient.id}`} href={`/trials/${trial.id}`}>
@@ -168,6 +206,31 @@ export default function PatientDashboardPage() {
                                 />
                               </div>
                             </div>
+
+                            {/* Dropout Risk Badge */}
+                            {riskData && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center gap-1.5">
+                                    <TrendingDown className="h-3.5 w-3.5" style={{ color: RISK_COLORS[riskData.risk_tier] || "#94A3B8" }} />
+                                    <Badge
+                                      variant={riskData.risk_tier === "RED" ? "destructive" : riskData.risk_tier === "AMBER" ? "secondary" : "default"}
+                                      className="text-xs"
+                                    >
+                                      {riskData.risk_tier} Risk
+                                    </Badge>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent className="text-xs">
+                                  <div className="space-y-1">
+                                    <p>Dropout Score: {(riskData.dropout_score * 100).toFixed(0)}%</p>
+                                    <p>Days Inactive: {riskData.days_since_login ?? "—"}</p>
+                                    <p>Symptoms/Week: {riskData.symptom_logs_week ?? "—"}</p>
+                                    <p>Wearable Uploads: {riskData.wearable_uploads_week ?? "—"}</p>
+                                  </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
 
                             {/* Symptom log shortcut */}
                             <Link

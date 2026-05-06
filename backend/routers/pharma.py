@@ -388,3 +388,87 @@ def reject_social_lead(
     lead.pharma_action = "rejected"
     db.commit()
     return {"success": True, "lead_id": lead.id, "status": "rejected"}
+
+
+@router.get("/patients/{trial_id}/dropout-risk")
+def get_patients_with_dropout_risk(
+    trial_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Get all patients in a trial with their latest dropout risk scores and engagement metrics."""
+    from models.models import DropoutScore, AnomalyAlert
+    
+    if current_user.role.value not in ("coordinator", "pharma"):
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    trial = db.query(Trial).filter(Trial.id == trial_id).first()
+    if not trial:
+        raise HTTPException(status_code=404, detail="Trial not found")
+        
+    if current_user.role.value == "pharma" and trial.pharma_user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Pharma users can only view data for their own trials")
+
+    patients = db.query(VerifiedPatient).filter(VerifiedPatient.trial_id == trial_id).all()
+    result = []
+
+    for patient in patients:
+        # Get latest dropout score
+        latest_dropout = (
+            db.query(DropoutScore)
+            .filter(DropoutScore.patient_id == patient.id)
+            .order_by(DropoutScore.scored_at.desc())
+            .first()
+        )
+
+        # Get unresolved anomalies
+        anomalies = db.query(AnomalyAlert).filter(
+            AnomalyAlert.patient_id == patient.id,
+            AnomalyAlert.resolved == False,
+        ).all()
+
+        # Determine overall risk tier (dropout or anomaly)
+        risk_tier = "GREEN"
+        if latest_dropout:
+            risk_tier = latest_dropout.risk_tier.value if hasattr(latest_dropout.risk_tier, "value") else str(latest_dropout.risk_tier)
+        
+        for anomaly in anomalies:
+            anomaly_tier = anomaly.alert_tier.value if hasattr(anomaly.alert_tier, "value") else str(anomaly.alert_tier)
+            tier_priority = {"RED": 0, "AMBER": 1, "GREEN": 2}
+            if tier_priority.get(anomaly_tier, 2) < tier_priority.get(risk_tier, 2):
+                risk_tier = anomaly_tier
+
+        result.append({
+            "patient_id": patient.id,
+            "hash_id": patient.hash_id,
+            "status": patient.status.value if hasattr(patient.status, "value") else str(patient.status),
+            "enrolled_at": patient.enrolled_at,
+            "match_score": patient.match_score or 0.0,
+            "dropout_risk": {
+                "score": latest_dropout.score if latest_dropout else None,
+                "tier": risk_tier,
+                "days_since_login": latest_dropout.days_since_login if latest_dropout else None,
+                "symptom_logs_week": latest_dropout.symptom_logs_week if latest_dropout else None,
+                "wearable_uploads_week": latest_dropout.wearable_uploads_week if latest_dropout else None,
+                "scored_at": latest_dropout.scored_at if latest_dropout else None,
+            },
+            "anomaly_alerts_count": len(anomalies),
+            "anomaly_alerts": [
+                {
+                    "id": a.id,
+                    "biometric_type": a.biometric_type,
+                    "patient_value": a.patient_value,
+                    "cohort_mean": a.cohort_mean,
+                    "z_score": a.z_score,
+                    "tier": a.alert_tier.value if hasattr(a.alert_tier, "value") else str(a.alert_tier),
+                    "created_at": a.created_at,
+                }
+                for a in anomalies
+            ],
+        })
+
+    # Sort by risk tier (RED first)
+    tier_order = {"RED": 0, "AMBER": 1, "GREEN": 2}
+    result.sort(key=lambda x: tier_order.get(x["dropout_risk"]["tier"], 2))
+    
+    return result

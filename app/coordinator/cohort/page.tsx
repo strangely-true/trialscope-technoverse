@@ -93,9 +93,9 @@ export default function CoordinatorCohortPage() {
             const fresh = d.alerts.filter((a: Alert) => !ids.has(a.id));
             return fresh.length ? [...fresh, ...prev].slice(0, 50) : prev;
           });
-        } catch {}
+        } catch { }
       };
-    } catch {}
+    } catch { }
     return () => { wsRef.current?.close(); setWsConnected(false); };
   }, [selTrial]);
 
@@ -247,43 +247,53 @@ export default function CoordinatorCohortPage() {
               <EmptyState icon={Users} title="No Enrolled Patients" description="Patients will appear here once they are matched and enrolled in this trial." />
             ) : (
               <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Patient Hash</TableHead>
-                      <TableHead>Risk</TableHead>
-                      <TableHead>Match Score</TableHead>
-                      <TableHead>Active Alerts</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Enrolled</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {patients.map((p) => (
-                      <TableRow key={p.id}>
-                        <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400">{p.hash_id.slice(0, 14)}…</TableCell>
-                        <TableCell>{riskBadge(p.risk_tier)}</TableCell>
-                        <TableCell className="text-slate-600 dark:text-slate-300">{p.match_score ? `${Math.round(p.match_score * 100)}%` : "—"}</TableCell>
-                        <TableCell>
-                          {p.active_alerts > 0
-                            ? <span className="font-bold text-red-600 dark:text-red-400">{p.active_alerts}</span>
-                            : <span className="text-slate-500 dark:text-slate-400">0</span>}
-                        </TableCell>
-                        <TableCell className="capitalize text-slate-500 dark:text-slate-400">{p.status}</TableCell>
-                        <TableCell className="text-slate-500 dark:text-slate-400">{new Date(p.enrolled_at).toLocaleDateString()}</TableCell>
-                        <TableCell>
-                          <button
-                            onClick={() => callPatient(p.id)}
-                            className="flex items-center gap-1 rounded-lg border border-emerald-300 px-2 py-1 text-xs font-medium text-emerald-600 hover:bg-emerald-50 dark:border-emerald-700 dark:hover:bg-emerald-900/20"
-                          >
-                            <Phone className="h-3 w-3" /> Call
-                          </button>
-                        </TableCell>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Patient Hash</TableHead>
+                        <TableHead>Risk</TableHead>
+                        <TableHead>Match Score</TableHead>
+                        <TableHead>Active Alerts</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Enrolled</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {patients.map((p) => (
+                        <TableRow key={p.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer">
+                          <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400">{p.hash_id.slice(0, 14)}…</TableCell>
+                          <TableCell>{riskBadge(p.risk_tier)}</TableCell>
+                          <TableCell className="text-slate-600 dark:text-slate-300">{p.match_score ? `${Math.round(p.match_score * 100)}%` : "—"}</TableCell>
+                          <TableCell>
+                            {p.active_alerts > 0
+                              ? <span className="font-bold text-red-600 dark:text-red-400">{p.active_alerts}</span>
+                              : <span className="text-slate-500 dark:text-slate-400">0</span>}
+                          </TableCell>
+                          <TableCell className="capitalize text-slate-500 dark:text-slate-400">{p.status}</TableCell>
+                          <TableCell className="text-slate-500 dark:text-slate-400">{new Date(p.enrolled_at).toLocaleDateString()}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <a
+                                href={`/coordinator/cohort/${p.id}`}
+                                className="flex items-center gap-1 rounded-lg border border-blue-300 px-2 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/20"
+                              >
+                                View
+                              </a>
+                              <button
+                                onClick={() => callPatient(p.id)}
+                                className="flex items-center gap-1 rounded-lg border border-emerald-300 px-2 py-1 text-xs font-medium text-emerald-600 hover:bg-emerald-50 dark:border-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-900/20"
+                              >
+                                <Phone className="h-3 w-3" /> Call
+                              </button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
             )}
           </TabsContent>
@@ -299,25 +309,24 @@ export default function CoordinatorCohortPage() {
             ) : (
               <div className="space-y-3">
                 {alerts.map((a) => (
-                    <div
-                      key={a.id}
-                      className={`flex items-center justify-between rounded-2xl border p-4 transition-all ${a.resolved ? "opacity-50" : ""} ${
-                        a.alert_tier === "RED" ? "border-red-200 bg-red-50/50 dark:border-red-800 dark:bg-red-900/10"
+                  <div
+                    key={a.id}
+                    className={`flex items-center justify-between rounded-2xl border p-4 transition-all ${a.resolved ? "opacity-50" : ""} ${a.alert_tier === "RED" ? "border-red-200 bg-red-50/50 dark:border-red-800 dark:bg-red-900/10"
                         : a.alert_tier === "AMBER" ? "border-amber-200 bg-amber-50/50 dark:border-amber-800 dark:bg-amber-900/10"
-                        : "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
+                          : "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
                       }`}
-                    >
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-slate-900 dark:text-white">{a.biometric_type}</span>
-                          {riskBadge(a.alert_tier)}
-                          {a.resolved && <Badge variant="secondary">✓ Resolved</Badge>}
-                        </div>
-                        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                          Patient #{a.patient_id} · Value: {a.patient_value?.toFixed(1)} · Mean: {a.cohort_mean?.toFixed(1)} · Z-score: {a.z_score?.toFixed(2)}
-                        </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{new Date(a.created_at).toLocaleString()}</p>
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-slate-900 dark:text-white">{a.biometric_type}</span>
+                        {riskBadge(a.alert_tier)}
+                        {a.resolved && <Badge variant="secondary">✓ Resolved</Badge>}
                       </div>
+                      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                        Patient #{a.patient_id} · Value: {a.patient_value?.toFixed(1)} · Mean: {a.cohort_mean?.toFixed(1)} · Z-score: {a.z_score?.toFixed(2)}
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{new Date(a.created_at).toLocaleString()}</p>
+                    </div>
                     {!a.resolved && (
                       <button
                         onClick={() => resolveAlert(a.id)}

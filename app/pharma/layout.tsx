@@ -26,7 +26,7 @@ export default function PharmaLayout({
       try {
         const parsed = JSON.parse(user);
         setUserName(parsed.full_name || parsed.email || "Pharma User");
-      } catch {}
+      } catch { }
     }
   }, [router]);
 
@@ -39,7 +39,7 @@ export default function PharmaLayout({
         onCollapse={setSidebarCollapsed}
       />
       <div
-        className="flex flex-1 flex-col transition-all duration-300"
+        className="flex min-w-0 flex-1 flex-col overflow-x-hidden transition-all duration-300"
         style={{
           marginLeft: sidebarCollapsed ? "64px" : "260px",
         }}
@@ -49,7 +49,9 @@ export default function PharmaLayout({
           userName={userName}
           onMenuClick={() => setSidebarCollapsed(!sidebarCollapsed)}
         />
-        <main className="flex-1 overflow-auto p-6">{children}</main>
+        <main className="flex-1 overflow-auto p-4 sm:p-6">
+          <div className="mx-auto w-full max-w-[1400px]">{children}</div>
+        </main>
       </div>
     </div>
   );

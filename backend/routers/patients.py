@@ -253,3 +253,84 @@ def get_my_trial_info(
             }
         })
     return result
+
+
+@router.get("/dropout-risk")
+def get_my_dropout_risk(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_patient),
+):
+    """Patient retrieves their own dropout risk scores across all enrolled trials."""
+    from models.models import DropoutScore, Trial
+    
+    hash_id = hashlib.sha256(current_user.email.encode()).hexdigest()
+    
+    # Find all trials where this patient is enrolled
+    enrollments = db.query(VerifiedPatient).filter(VerifiedPatient.hash_id == hash_id).all()
+    
+    if not enrollments:
+        return {"trials": [], "latest_scores": []}
+    
+    result_by_trial = []
+    all_scores = []
+    
+    for patient_record in enrollments:
+        trial = db.query(Trial).filter(Trial.id == patient_record.trial_id).first()
+        if not trial:
+            continue
+        
+        # Get latest dropout score for this trial
+        latest_score = (
+            db.query(DropoutScore)
+            .filter(DropoutScore.patient_id == patient_record.id)
+            .order_by(DropoutScore.scored_at.desc())
+            .first()
+        )
+        
+        # Get last 5 historical scores
+        historical_scores = (
+            db.query(DropoutScore)
+            .filter(DropoutScore.patient_id == patient_record.id)
+            .order_by(DropoutScore.scored_at.desc())
+            .limit(5)
+            .all()
+        )
+        
+        if latest_score:
+            result_by_trial.append({
+                "trial_id": trial.id,
+                "trial_title": trial.title,
+                "trial_disease": trial.disease,
+                "risk_tier": latest_score.risk_tier.value if hasattr(latest_score.risk_tier, "value") else str(latest_score.risk_tier),
+                "dropout_score": latest_score.score,
+                "scored_at": latest_score.scored_at,
+                "metrics": {
+                    "days_since_login": latest_score.days_since_login,
+                    "symptom_logs_week": latest_score.symptom_logs_week,
+                    "wearable_uploads_week": latest_score.wearable_uploads_week,
+                },
+                "historical": [
+                    {
+                        "score": s.score,
+                        "tier": s.risk_tier.value if hasattr(s.risk_tier, "value") else str(s.risk_tier),
+                        "scored_at": s.scored_at,
+                    }
+                    for s in reversed(historical_scores)
+                ],
+            })
+            all_scores.append(latest_score)
+    
+    # Sort by risk tier (RED first)
+    tier_order = {"RED": 0, "AMBER": 1, "GREEN": 2}
+    result_by_trial.sort(key=lambda x: tier_order.get(x["risk_tier"], 2))
+    
+    return {
+        "trials": result_by_trial,
+        "latest_scores": [
+            {
+                "score": s.score,
+                "tier": s.risk_tier.value if hasattr(s.risk_tier, "value") else str(s.risk_tier),
+            }
+            for s in all_scores
+        ],
+    }
