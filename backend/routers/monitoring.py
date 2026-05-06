@@ -427,7 +427,7 @@ async def call_patient(
 
     db_log = CallLog(
         coordinator_id=current_user.id,
-        patient_id=int(patient_id),
+        patient_id=patient_user.id,
         twilio_call_sid=call.sid,
         status="initiated",
         initiated_at=datetime.now()
@@ -463,7 +463,32 @@ async def call_twiml(patient_phone: str):
 
 @monitoring_router.get("/call/logs/{patient_id}")
 async def get_call_logs(patient_id: str, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
-    logs = db.query(CallLog).filter(CallLog.patient_id == int(patient_id)).order_by(CallLog.initiated_at.desc()).all()
+    # patient_id is VerifiedPatient.id, resolve to User.id
+    from models.models import VerifiedPatient, IdentityMap
+    vp = db.query(VerifiedPatient).filter(VerifiedPatient.id == int(patient_id)).first()
+    if not vp:
+        return []
+
+    # Find User.id via hash_id
+    from models.models import User
+    patient_user_id = None
+    identity = db.query(IdentityMap).filter(IdentityMap.hash_id == vp.hash_id).first()
+    if identity and identity.email:
+        u = db.query(User).filter(User.email == identity.email).first()
+        if u: patient_user_id = u.id
+    
+    if not patient_user_id:
+        # Fallback scan
+        import hashlib as _hashlib
+        for u in db.query(User).all():
+            if _hashlib.sha256(u.email.encode()).hexdigest() == vp.hash_id:
+                patient_user_id = u.id
+                break
+    
+    if not patient_user_id:
+        return []
+
+    logs = db.query(CallLog).filter(CallLog.patient_id == patient_user_id).order_by(CallLog.initiated_at.desc()).all()
     results = []
     for log in logs:
         coord = db.query(User).filter(User.id == log.coordinator_id).first()

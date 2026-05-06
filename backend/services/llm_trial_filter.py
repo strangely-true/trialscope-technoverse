@@ -111,14 +111,13 @@ MATCHING RULES:
    - YES: "Leukemia" matches "Blood Cancer" (synonym).
    - YES: "Breast Cancer" matches "Breast Cancer" (exact).
    - NO: "Blood Pressure" does NOT match "Blood Cancer".
-   - NO: "Cancer" alone is TOO GENERIC for "Blood Cancer".
    - NO: "Blood Disorder" is TOO GENERIC for "Leukemia".
-2. STAGE/PHASE ALIGNMENT:
-   - If a patient specifies a Stage (e.g., Stage 4), the trial must be appropriate for that stage.
-   - Do NOT confuse "Stage 4" (patient severity) with "Phase 4" (trial marketing phase) unless they are medically compatible.
+2. STAGE/PHASE FLEXIBILITY:
+   - While stage alignment is preferred, do NOT reject a trial solely because of a stage difference if the condition matches perfectly, unless it's a clear medical contradiction.
+   - For example, a "Relapsed Blood Cancer" trial might be relevant for a "Stage 1" patient for future reference or if early-stage trials are scarce.
 3. NO PARTIAL KEYWORD MATCHES:
-   - Rejection is mandatory if the match is only based on a single shared word like "blood" or "cancer" while the actual conditions differ.
-4. MEDICAL SYNONYMS: Use clinical knowledge to identify synonyms (e.g., "NSCLC" = "Non-Small Cell Lung Cancer").
+   - Shared words like "blood" or "cancer" are NOT enough if the conditions are different.
+4. MEDICAL SYNONYMS: Use clinical knowledge (e.g., "NSCLC" = "Non-Small Cell Lung Cancer").
 
 OUTPUT SCHEMA (STRICT JSON ARRAY ONLY):
 [
@@ -136,6 +135,7 @@ If no trials match, return []. Do not include any text outside the JSON array.""
 
     final_output = []
     seen_trials = set()
+    llm_matched_indexes = set()
     try:
         llm = get_fallback_llm(model_type="fast", temperature=0)
         prompt = ChatPromptTemplate.from_messages([
@@ -210,12 +210,41 @@ Source: {t.get('source_database')}
                         "concerns": m.get("concerns")
                     })
                     seen_trials.add(trial_key)
+                    llm_matched_indexes.add(offset + idx)
             except Exception as chunk_error:
                 print(f"[Antigravity-LLM] Chunk parse failed at offset {offset}: {chunk_error}")
 
     except Exception as e:
         print(f"[Antigravity-LLM] Filter failed: {e}")
-        return [] # Return empty instead of loose fallback
+        # fallback is handled below
+
+    # 4. Smart Fallback: Exact Primary Condition Match
+    # If the LLM rejected a trial but it contains the EXACT primary condition string,
+    # we include it as a LOW tier match so the user doesn't see an empty screen.
+    primary_cond = str(patient_profile.get("primary_condition", "")).lower()
+    if primary_cond and len(primary_cond) > 3:
+        for idx, trial in enumerate(raw_trials):
+            if idx in llm_matched_indexes:
+                continue
+            
+            trial_key = _trial_key(trial)
+            if trial_key in seen_trials:
+                continue
+            
+            # Require exact match of the entire primary condition string (not just partial keywords)
+            title = str(trial.get("trial_name", "")).lower()
+            cond = str(trial.get("condition", "")).lower()
+            
+            if primary_cond in title or primary_cond in cond:
+                final_output.append({
+                    **trial,
+                    "match_score": 0.45,
+                    "match_tier": "LOW",
+                    "match_reason": f"Exact condition string match: '{primary_cond}'",
+                    "why_relevant": f"This trial explicitly mentions {primary_cond} in its title or condition metadata.",
+                    "concerns": "Included via smart-matching because the AI reasoning layer was highly strict.",
+                })
+                seen_trials.add(trial_key)
 
     final_output.sort(key=lambda x: x["match_score"], reverse=True)
     return final_output

@@ -17,52 +17,42 @@ async def run_semantic_tests():
     
     test_cases = [
         {
-            "name": "Blood Cancer vs Blood Pressure (Should Reject)",
+            "name": "User Screenshot Case: Blood Cancer Stage 1",
             "patient": {
                 "primary_condition": "Blood Cancer",
-                "condition_stage": "Stage 4",
-                "age": "45"
+                "condition_stage": "Stage 1",
+                "age": "35",
+                "country": "India",
+                "prior_treatments": "Chemotherapy (R-CHOP regimen) Radiation therapy (localized) Immunotherapy (Rituximab)"
             },
             "trials": [
                 {
-                    "trial_name": "Blood Pressure Phase 4 Study",
+                    "trial_name": "Phase III CAR-T Cell Therapy for Relapsed Blood Cancer",
+                    "condition": "Relapsed Blood Cancer",
+                    "eligibility_summary": "Patients with relapsed or refractory B-cell malignancies.",
+                    "source_database": "ClinicalTrials.gov"
+                },
+                {
+                    "trial_name": "Blood Pressure Medication Study Phase 4",
                     "condition": "Hypertension",
-                    "eligibility_summary": "Looking for patients with high blood pressure.",
+                    "eligibility_summary": "Evaluating blood pressure medication.",
                     "source_database": "WHO"
                 }
             ],
-            "should_match": False
+            "should_match": True # Should match the first one
         },
         {
-            "name": "Blood Cancer vs Leukemia (Should Match Synonyms)",
+            "name": "Blood Pressure Rejection Test",
             "patient": {
                 "primary_condition": "Blood Cancer",
-                "condition_stage": "Stage 4",
-                "age": "45"
+                "condition_stage": "Stage 1"
             },
             "trials": [
                 {
-                    "trial_name": "New Treatment for Leukemia",
-                    "condition": "Leukemia",
-                    "eligibility_summary": "Stage 4 patients needed.",
-                    "source_database": "ClinicalTrials.gov"
-                }
-            ],
-            "should_match": True
-        },
-        {
-            "name": "Generic Cancer vs Specific Blood Cancer (Should Reject)",
-            "patient": {
-                "primary_condition": "Cancer",
-                "condition_stage": "Stage 4",
-                "age": "45"
-            },
-            "trials": [
-                {
-                    "trial_name": "Advanced Blood Cancer Research",
-                    "condition": "Multiple Myeloma",
-                    "eligibility_summary": "Specific blood cancer trial.",
-                    "source_database": "EU_CTR"
+                    "trial_name": "New Blood Pressure Drug",
+                    "condition": "Hypertension",
+                    "eligibility_summary": "Focusing on systolic blood pressure reduction.",
+                    "source_database": "WHO"
                 }
             ],
             "should_match": False

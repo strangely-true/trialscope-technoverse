@@ -877,7 +877,6 @@ async def search_all_databases(search_query: str, api_params: dict) -> list:
             _ctri(client, api_params),
             _chictr(client, source_query),
             _drks(client, source_query),
-            _umin(client, source_query),
             _thai(client, source_query),
             _netherlands(client, source_query),
             _rebec(client, source_query),

@@ -31,7 +31,13 @@ def _summarise_with_llm(consent_text: str) -> list:
         
         result = invoke_llm_chain(system_prompt, human_prompt, {"consent_text": consent_text}, model_type="fast", temperature=0.3)
         
-        lines = [l.strip() for l in result.content.split("\n") if l.strip() and l.strip().startswith(("•", "-", "*", "1", "2", "3", "4", "5"))]
+        raw_content = result.content
+        if isinstance(raw_content, list):
+            raw_content = "".join([item.get("text", "") if isinstance(item, dict) else str(item) for item in raw_content])
+        elif not isinstance(raw_content, str):
+            raw_content = str(raw_content)
+
+        lines = [l.strip() for l in raw_content.split("\n") if l.strip() and l.strip().startswith(("•", "-", "*", "1", "2", "3", "4", "5"))]
         return lines or _heuristic_summary(consent_text)
     except Exception as e:
         print(f"[Agent6] LLM error: {e}, falling back to heuristic")
