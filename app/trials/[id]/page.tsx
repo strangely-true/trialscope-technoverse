@@ -339,26 +339,13 @@ export default function TrialDetailPage() {
 
   if (loading) {
     return (
-      <div className="hero-bg min-h-screen">
-        <nav
-          style={{
-            background: "rgba(5,20,36,0.95)",
-            backdropFilter: "blur(20px)",
-            borderBottom: "1px solid var(--glass-border)",
-            padding: "1rem 1.5rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "1rem",
-          }}
-        >
-          <Link href="/trials" style={{ color: "var(--primary)" }}>
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+        <nav className="flex items-center gap-4 border-b border-slate-200 bg-white/95 px-6 py-4 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95">
+          <Link href="/trials" className="text-sm font-semibold text-blue-600 dark:text-blue-400">
             ← Back to Trials
           </Link>
         </nav>
-        <div
-          className="py-20 text-center"
-          style={{ color: "var(--foreground-muted)" }}
-        >
+        <div className="py-20 text-center text-slate-500 dark:text-slate-400">
           <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>🔄</div>
           Loading trial details...
         </div>
@@ -368,26 +355,13 @@ export default function TrialDetailPage() {
 
   if (error || !trial) {
     return (
-      <div className="hero-bg min-h-screen">
-        <nav
-          style={{
-            background: "rgba(5,20,36,0.95)",
-            backdropFilter: "blur(20px)",
-            borderBottom: "1px solid var(--glass-border)",
-            padding: "1rem 1.5rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "1rem",
-          }}
-        >
-          <Link href="/trials" style={{ color: "var(--primary)" }}>
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+        <nav className="flex items-center gap-4 border-b border-slate-200 bg-white/95 px-6 py-4 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95">
+          <Link href="/trials" className="text-sm font-semibold text-blue-600 dark:text-blue-400">
             ← Back to Trials
           </Link>
         </nav>
-        <div
-          className="py-20 text-center"
-          style={{ color: "var(--foreground-error)" }}
-        >
+        <div className="py-20 text-center text-red-500 dark:text-red-400">
           <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>⚠️</div>
           {error || "Trial not found"}
         </div>
@@ -396,23 +370,10 @@ export default function TrialDetailPage() {
   }
 
   return (
-    <div className="hero-bg min-h-screen">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       {/* Nav */}
-      <nav
-        style={{
-          background: "rgba(5,20,36,0.95)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "1px solid var(--glass-border)",
-          padding: "1rem 1.5rem",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Link
-          href="/trials"
-          style={{ color: "var(--primary)", textDecoration: "none" }}
-        >
+      <nav className="flex items-center justify-between border-b border-slate-200 bg-white/95 px-6 py-4 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95">
+        <Link href="/trials" className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400">
           ← Back to Trials
         </Link>
         <button
@@ -420,13 +381,7 @@ export default function TrialDetailPage() {
             localStorage.clear()
             router.push("/login")
           }}
-          style={{
-            color: "var(--foreground-muted)",
-            fontSize: "0.85rem",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-          }}
+          className="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
         >
           Logout
         </button>
@@ -434,109 +389,49 @@ export default function TrialDetailPage() {
 
       <div className="mx-auto max-w-4xl px-6 py-10">
         {/* Trial Header */}
-        <div className="glass mb-8 p-8">
+        <div className="mb-8 rounded-xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-800">
           <div className="mb-4 flex items-center gap-3">
-            <span className="badge-cyan">Stage {trial.stage}</span>
-            <span className="badge-green">Recruiting</span>
+            <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">Stage {trial.stage}</span>
+            <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">Recruiting</span>
           </div>
-          <h1
-            style={{
-              fontFamily: "Space Grotesk",
-              fontSize: "2rem",
-              fontWeight: 700,
-              marginBottom: "1rem",
-            }}
-          >
+          <h1 className="mb-4 text-3xl font-bold text-slate-900 dark:text-white">
             {trial.title}
           </h1>
-          <p style={{ color: "var(--foreground-muted)", fontSize: "1.05rem" }}>
+          <p className="text-[1.05rem] text-slate-500 dark:text-slate-400">
             {trial.description}
           </p>
 
           {/* Key Details Grid */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-              gap: "1.5rem",
-              marginTop: "2rem",
-              paddingTop: "2rem",
-              borderTop: "1px solid var(--glass-border)",
-            }}
-          >
+          <div className="mt-8 grid grid-cols-2 gap-6 border-t border-slate-200 pt-8 sm:grid-cols-4 dark:border-slate-700">
             <div>
-              <div
-                style={{
-                  color: "var(--foreground-subtle)",
-                  fontSize: "0.8rem",
-                }}
-              >
+              <div className="text-xs text-slate-500 dark:text-slate-400">
                 🎯 DISEASE FOCUS
               </div>
-              <div
-                style={{
-                  fontFamily: "Space Grotesk",
-                  fontWeight: 600,
-                  marginTop: "0.5rem",
-                }}
-              >
+              <div className="mt-2 font-semibold text-slate-900 dark:text-white">
                 {trial.disease}
               </div>
             </div>
             <div>
-              <div
-                style={{
-                  color: "var(--foreground-subtle)",
-                  fontSize: "0.8rem",
-                }}
-              >
+              <div className="text-xs text-slate-500 dark:text-slate-400">
                 🎂 AGE RANGE
               </div>
-              <div
-                style={{
-                  fontFamily: "Space Grotesk",
-                  fontWeight: 600,
-                  marginTop: "0.5rem",
-                }}
-              >
+              <div className="mt-2 font-semibold text-slate-900 dark:text-white">
                 {trial.age_min}–{trial.age_max} years
               </div>
             </div>
             <div>
-              <div
-                style={{
-                  color: "var(--foreground-subtle)",
-                  fontSize: "0.8rem",
-                }}
-              >
+              <div className="text-xs text-slate-500 dark:text-slate-400">
                 👥 PATIENTS NEEDED
               </div>
-              <div
-                style={{
-                  fontFamily: "Space Grotesk",
-                  fontWeight: 600,
-                  marginTop: "0.5rem",
-                }}
-              >
+              <div className="mt-2 font-semibold text-slate-900 dark:text-white">
                 {trial.patients_needed}
               </div>
             </div>
             <div>
-              <div
-                style={{
-                  color: "var(--foreground-subtle)",
-                  fontSize: "0.8rem",
-                }}
-              >
+              <div className="text-xs text-slate-500 dark:text-slate-400">
                 ⚧ GENDER
               </div>
-              <div
-                style={{
-                  fontFamily: "Space Grotesk",
-                  fontWeight: 600,
-                  marginTop: "0.5rem",
-                }}
-              >
+              <div className="mt-2 font-semibold text-slate-900 dark:text-white">
                 {trial.gender === "any" ? "Any" : trial.gender}
               </div>
             </div>
@@ -544,46 +439,23 @@ export default function TrialDetailPage() {
         </div>
 
         {/* Criteria */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "1.5rem",
-            marginBottom: "2rem",
-          }}
-        >
+        <div className="mb-8 grid gap-6 md:grid-cols-2">
           {trial.inclusion_criteria && (
-            <div className="glass p-6">
-              <h3
-                style={{
-                  fontFamily: "Space Grotesk",
-                  fontWeight: 600,
-                  marginBottom: "1rem",
-                }}
-              >
+            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+              <h3 className="mb-4 text-lg font-semibold text-slate-900 dark:text-white">
                 ✅ Inclusion Criteria
               </h3>
-              <p
-                style={{ color: "var(--foreground-muted)", fontSize: "0.9rem" }}
-              >
+              <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                 {trial.inclusion_criteria}
               </p>
             </div>
           )}
           {trial.exclusion_criteria && (
-            <div className="glass p-6">
-              <h3
-                style={{
-                  fontFamily: "Space Grotesk",
-                  fontWeight: 600,
-                  marginBottom: "1rem",
-                }}
-              >
+            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+              <h3 className="mb-4 text-lg font-semibold text-slate-900 dark:text-white">
                 ❌ Exclusion Criteria
               </h3>
-              <p
-                style={{ color: "var(--foreground-muted)", fontSize: "0.9rem" }}
-              >
+              <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                 {trial.exclusion_criteria}
               </p>
             </div>
@@ -591,64 +463,46 @@ export default function TrialDetailPage() {
         </div>
 
         {consentTemplate && (
-          <div className="glass p-8" style={{ marginBottom: "2rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "start", marginBottom: "1rem" }}>
+          <div className="mb-8 rounded-xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <div className="mb-6 flex items-start justify-between gap-4">
               <div>
-                <h2
-                  style={{
-                    fontFamily: "Space Grotesk",
-                    fontSize: "1.5rem",
-                    fontWeight: 700,
-                  }}
-                >
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
                   Consent Agreement
                 </h2>
-                <p style={{ color: "var(--foreground-muted)", fontSize: "0.9rem", marginTop: "0.35rem" }}>
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                   Review the template, fill the blanks, then sign before submitting your application.
                 </p>
               </div>
               {consentSubmission ? (
-                <span className="badge-green">Signed</span>
+                <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">Signed</span>
               ) : (
-                <span className="badge-amber">Pending signature</span>
+                <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">Pending signature</span>
               )}
             </div>
 
-            <div
-              style={{
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid var(--glass-border)",
-                borderRadius: "var(--radius)",
-                padding: "1rem",
-                whiteSpace: "pre-wrap",
-                color: "var(--foreground-muted)",
-                marginBottom: "1rem",
-                lineHeight: 1.65,
-              }}
-            >
+            <div className="mb-4 whitespace-pre-wrap rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm leading-relaxed text-slate-600 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400">
               {consentTemplate.consent_template_text}
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               {consentFields.map((field) => (
                 <div key={field}>
-                  <label style={{ display: "block", marginBottom: "0.4rem", fontWeight: 600 }}>
+                  <label className="mb-1 block text-sm font-semibold text-slate-700 dark:text-slate-300">
                     {field.replace(/_/g, " ")}
                   </label>
                   <input
                     name={field}
                     value={consentInputs[field] || ""}
                     onChange={handleConsentFieldChange}
-                    className="input-dark"
-                    style={{ width: "100%" }}
+                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
                     placeholder={field.replace(/_/g, " ")}
                   />
                 </div>
               ))}
             </div>
 
-            <div style={{ marginTop: "1rem" }}>
-              <label style={{ display: "flex", alignItems: "center", gap: "0.6rem", fontSize: "0.9rem", color: "var(--foreground-muted)" }}>
+            <div className="mt-4">
+              <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
                 <input
                   type="checkbox"
                   checked={consentAcknowledged}
@@ -658,8 +512,8 @@ export default function TrialDetailPage() {
               </label>
             </div>
 
-            <div style={{ marginTop: "1rem" }}>
-              <label style={{ display: "block", marginBottom: "0.4rem", fontWeight: 600 }}>
+            <div className="mt-4">
+              <label className="mb-1 block text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Typed signature
               </label>
               <input
@@ -672,20 +526,11 @@ export default function TrialDetailPage() {
             </div>
 
             {consentMessage && (
-              <div
-                style={{
-                  background: "rgba(34, 197, 94, 0.1)",
-                  color: "var(--green-alert)",
-                  padding: "1rem",
-                  borderRadius: "var(--radius)",
-                  marginTop: "1rem",
-                  fontSize: "0.9rem",
-                }}
-              >
+              <div className="mt-4 rounded-lg bg-emerald-50 p-4 text-sm text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
                 {consentMessage}
                 {consentSubmission?.signed_pdf_url ? (
                   <div style={{ marginTop: "0.5rem" }}>
-                    <a href={consentSubmission.signed_pdf_url} target="_blank" rel="noreferrer" className="text-cyan">
+                    <a href={consentSubmission.signed_pdf_url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline dark:text-blue-400">
                       Open signed PDF
                     </a>
                   </div>
@@ -694,27 +539,17 @@ export default function TrialDetailPage() {
             )}
 
             {consentError && (
-              <div
-                style={{
-                  background: "rgba(239, 68, 68, 0.1)",
-                  color: "var(--red-alert)",
-                  padding: "1rem",
-                  borderRadius: "var(--radius)",
-                  marginTop: "1rem",
-                  fontSize: "0.9rem",
-                }}
-              >
+              <div className="mt-4 rounded-lg bg-red-50 p-4 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
                 {consentError}
               </div>
             )}
 
-            <div style={{ display: "flex", gap: "0.75rem", marginTop: "1rem" }}>
+            <div className="mt-4 flex gap-3">
               <button
                 type="button"
                 onClick={submitConsent}
                 disabled={consentSubmitting || !!consentSubmission}
-                className="btn-primary"
-                style={{ padding: "0.8rem 1.1rem" }}
+                className="rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {consentSubmitting ? "Signing..." : consentSubmission ? "Consent Signed" : "Sign Consent"}
               </button>
@@ -743,22 +578,16 @@ export default function TrialDetailPage() {
             </div>
 
             {formSchema.already_applied ? (
-              <div style={{
-                textAlign: "center",
-                padding: "3rem 1rem",
-                background: "rgba(34, 197, 94, 0.05)",
-                border: "1px dashed var(--green-alert)",
-                borderRadius: "var(--radius)"
-              }}>
-                <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🎉</div>
-                <h3 style={{ fontFamily: "Space Grotesk", fontWeight: 600, fontSize: "1.2rem", marginBottom: "0.5rem" }}>
+              <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-emerald-500 bg-emerald-50/30 p-10 dark:bg-emerald-900/10">
+                <div className="mb-4 text-4xl">🎉</div>
+                <h3 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
                   You have already applied for this trial
                 </h3>
-                <p style={{ color: "var(--foreground-muted)", fontSize: "0.95rem" }}>
+                <p className="text-center text-sm text-slate-500 dark:text-slate-400">
                   Your application is currently being reviewed by the clinical trial coordinator.
                   You can track the status in your dashboard.
                 </p>
-                <Link href="/dashboard" className="btn-primary" style={{ marginTop: "1.5rem", display: "inline-block", padding: "0.6rem 1.5rem" }}>
+                <Link href="/dashboard" className="mt-6 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-blue-700">
                   Go to Dashboard →
                 </Link>
               </div>
@@ -780,35 +609,19 @@ export default function TrialDetailPage() {
                 )}
 
                 {success && (
-                  <div
-                    style={{
-                      background: "rgba(34, 197, 94, 0.1)",
-                      color: "var(--green-alert)",
-                      padding: "1rem",
-                      borderRadius: "var(--radius)",
-                      marginBottom: "1rem",
-                      fontSize: "0.9rem",
-                    }}
-                  >
+                  <div className="mb-6 rounded-lg bg-emerald-50 p-4 text-sm text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
                     {success}
                   </div>
                 )}
 
                 <form onSubmit={handleSubmitApplication}>
-                  <div style={{ display: "grid", gap: "1.5rem" }}>
+                  <div className="grid gap-6">
                     {formSchema.fields.map((field) => (
                       <div key={field.name}>
-                        <label
-                          style={{
-                            display: "block",
-                            marginBottom: "0.5rem",
-                            fontWeight: field.required ? 600 : 400,
-                            fontSize: "0.9rem",
-                          }}
-                        >
+                        <label className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300">
                           {field.label}
                           {field.required && (
-                            <span style={{ color: "var(--red-alert)" }}> *</span>
+                            <span className="text-red-500"> *</span>
                           )}
                         </label>
                         {field.type === "select" && field.options ? (
@@ -817,8 +630,7 @@ export default function TrialDetailPage() {
                             value={formData[field.name] || ""}
                             onChange={handleFormChange}
                             required={field.required}
-                            className="input-dark"
-                            style={{ width: "100%" }}
+                            className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
                           >
                             <option value="">Select {field.label}</option>
                             {field.options.map((opt) => (
@@ -833,12 +645,7 @@ export default function TrialDetailPage() {
                             value={formData[field.name] || ""}
                             onChange={handleFormChange}
                             required={field.required}
-                            className="input-dark"
-                            style={{
-                              width: "100%",
-                              minHeight: "100px",
-                              fontFamily: "inherit",
-                            }}
+                            className="min-h-[100px] w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
                             placeholder={field.label}
                           />
                         ) : (
@@ -848,8 +655,7 @@ export default function TrialDetailPage() {
                             value={formData[field.name] || ""}
                             onChange={handleFormChange}
                             required={field.required}
-                            className="input-dark"
-                            style={{ width: "100%" }}
+                            className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
                             placeholder={field.label}
                           />
                         )}
@@ -857,7 +663,7 @@ export default function TrialDetailPage() {
                     ))}
                   </div>
 
-                  <div style={{ marginTop: "1.5rem", display: "flex", alignItems: "flex-start", gap: "0.75rem" }}>
+                  <div className="mt-6 flex items-start gap-3">
                     <input
                       type="checkbox"
                       name="consent_given"
@@ -865,9 +671,9 @@ export default function TrialDetailPage() {
                       checked={!!formData["consent_given"]}
                       onChange={(e) => setFormData(prev => ({ ...prev, consent_given: e.target.checked ? "true" : "" }))}
                       required
-                      style={{ marginTop: "0.25rem", cursor: "pointer" }}
+                      className="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                     />
-                    <label htmlFor="consent_given" style={{ fontSize: "0.9rem", color: "var(--foreground-muted)", cursor: "pointer" }}>
+                    <label htmlFor="consent_given" className="cursor-pointer text-sm text-slate-500 dark:text-slate-400">
                       I consent to sharing my medical history and contact information with the clinical trial coordinators and pharmaceutical sponsors for the purpose of trial enrollment.
                     </label>
                   </div>
@@ -875,15 +681,7 @@ export default function TrialDetailPage() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="btn-primary"
-                    style={{
-                      width: "100%",
-                      marginTop: "2rem",
-                      padding: "0.8rem",
-                      fontSize: "1rem",
-                      opacity: submitting ? 0.6 : 1,
-                      cursor: submitting ? "not-allowed" : "pointer",
-                    }}
+                    className="mt-8 w-full rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-blue-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {submitting ? "Submitting..." : "Submit Application →"}
                   </button>

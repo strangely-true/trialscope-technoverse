@@ -107,61 +107,37 @@ export default function CreateTrialPage() {
   }
 
   return (
-    <div className="hero-bg min-h-screen">
-      <nav
-        style={{
-          background: "rgba(5,20,36,0.95)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "1px solid var(--glass-border)",
-          padding: "1rem 1.5rem",
-          display: "flex",
-          alignItems: "center",
-          gap: "1rem",
-        }}
-      >
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <nav className="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-slate-200 bg-white/80 px-4 backdrop-blur-xl dark:border-slate-700 dark:bg-slate-900/80">
         <Link
           href="/pharma/analytics"
-          style={{ color: "var(--foreground-subtle)", fontSize: "0.85rem" }}
+          className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
         >
           ← Analytics
         </Link>
-        <span style={{ color: "var(--glass-border)" }}>|</span>
-        <span style={{ fontFamily: "Space Grotesk", fontWeight: 700 }}>
-          🧬 Trial<span className="text-cyan">Go</span>
+        <span className="text-slate-300 dark:text-slate-600">|</span>
+        <span className="text-sm font-semibold text-slate-900 dark:text-white">
+          Trial<span className="text-blue-600 dark:text-blue-400">Go</span>
         </span>
       </nav>
 
       <div className="mx-auto max-w-2xl px-6 py-10">
-        <h1
-          style={{
-            fontFamily: "Space Grotesk",
-            fontSize: "2rem",
-            fontWeight: 700,
-            marginBottom: "0.5rem",
-          }}
-        >
+        <h1 className="mb-2 text-3xl font-bold text-slate-900 dark:text-white">
           Create New Trial
         </h1>
-        <p style={{ color: "var(--foreground-muted)", marginBottom: "2rem" }}>
+        <p className="mb-8 text-slate-500 dark:text-slate-400">
           AI agents will automatically start recruiting matching candidates once
           the trial goes live.
         </p>
 
-        <div className="glass-card p-8">
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-800">
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <div>
-              <label
-                style={{
-                  display: "block",
-                  marginBottom: "0.4rem",
-                  fontSize: "0.85rem",
-                  color: "var(--foreground-muted)",
-                }}
-              >
+              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Trial Title *
               </label>
               <input
-                className="input-dark"
+                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                 placeholder="e.g. Phase III Blood Cancer Immunotherapy Study"
                 required
                 value={form.title}
@@ -172,18 +148,11 @@ export default function CreateTrialPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "0.4rem",
-                    fontSize: "0.85rem",
-                    color: "var(--foreground-muted)",
-                  }}
-                >
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
                   Disease Area *
                 </label>
                 <select
-                  className="input-dark"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                   required
                   value={form.disease}
                   onChange={(e) =>
@@ -199,18 +168,11 @@ export default function CreateTrialPage() {
                 </select>
               </div>
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "0.4rem",
-                    fontSize: "0.85rem",
-                    color: "var(--foreground-muted)",
-                  }}
-                >
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
                   Trial Stage
                 </label>
                 <select
-                  className="input-dark"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                   value={form.stage}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, stage: e.target.value }))
@@ -226,18 +188,11 @@ export default function CreateTrialPage() {
             </div>
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "0.4rem",
-                    fontSize: "0.85rem",
-                    color: "var(--foreground-muted)",
-                  }}
-                >
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
                   Min Age
                 </label>
                 <input
-                  className="input-dark"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                   type="number"
                   min={0}
                   max={120}
@@ -248,18 +203,11 @@ export default function CreateTrialPage() {
                 />
               </div>
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "0.4rem",
-                    fontSize: "0.85rem",
-                    color: "var(--foreground-muted)",
-                  }}
-                >
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
                   Max Age
                 </label>
                 <input
-                  className="input-dark"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                   type="number"
                   min={0}
                   max={120}
@@ -270,18 +218,11 @@ export default function CreateTrialPage() {
                 />
               </div>
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "0.4rem",
-                    fontSize: "0.85rem",
-                    color: "var(--foreground-muted)",
-                  }}
-                >
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
                   Gender
                 </label>
                 <select
-                  className="input-dark"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                   value={form.gender}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, gender: e.target.value }))
@@ -296,18 +237,11 @@ export default function CreateTrialPage() {
               </div>
             </div>
             <div>
-              <label
-                style={{
-                  display: "block",
-                  marginBottom: "0.4rem",
-                  fontSize: "0.85rem",
-                  color: "var(--foreground-muted)",
-                }}
-              >
+              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Patients Needed *
               </label>
               <input
-                className="input-dark"
+                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                 type="number"
                 min={1}
                 required
@@ -321,18 +255,11 @@ export default function CreateTrialPage() {
               />
             </div>
             <div>
-              <label
-                style={{
-                  display: "block",
-                  marginBottom: "0.4rem",
-                  fontSize: "0.85rem",
-                  color: "var(--foreground-muted)",
-                }}
-              >
+              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Inclusion Criteria
               </label>
               <textarea
-                className="input-dark"
+                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                 rows={3}
                 placeholder="e.g. Diagnosed with Stage II-III blood cancer, ECOG performance status 0-2..."
                 value={form.inclusion_criteria}
@@ -343,18 +270,11 @@ export default function CreateTrialPage() {
               />
             </div>
             <div>
-              <label
-                style={{
-                  display: "block",
-                  marginBottom: "0.4rem",
-                  fontSize: "0.85rem",
-                  color: "var(--foreground-muted)",
-                }}
-              >
+              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Exclusion Criteria
               </label>
               <textarea
-                className="input-dark"
+                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                 rows={2}
                 placeholder="e.g. Prior CAR-T therapy, active autoimmune disease..."
                 value={form.exclusion_criteria}
@@ -365,18 +285,11 @@ export default function CreateTrialPage() {
               />
             </div>
             <div>
-              <label
-                style={{
-                  display: "block",
-                  marginBottom: "0.4rem",
-                  fontSize: "0.85rem",
-                  color: "var(--foreground-muted)",
-                }}
-              >
+              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Description
               </label>
               <textarea
-                className="input-dark"
+                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                 rows={3}
                 placeholder="Brief description of the trial objectives..."
                 value={form.description}
@@ -387,71 +300,29 @@ export default function CreateTrialPage() {
               />
             </div>
 
-            <div
-              style={{
-                border: "1px solid var(--glass-border)",
-                borderRadius: "var(--radius)",
-                padding: "1rem",
-                background: "rgba(255,255,255,0.02)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: "1rem",
-                  flexWrap: "wrap",
-                  marginBottom: "0.75rem",
-                }}
-              >
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-700 dark:bg-slate-800/50">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
                 <div>
-                  <div
-                    style={{
-                      fontFamily: "Space Grotesk",
-                      fontWeight: 700,
-                      marginBottom: "0.2rem",
-                    }}
-                  >
+                  <div className="mb-1 font-bold text-slate-900 dark:text-white">
                     Consent Setup
                   </div>
-                  <p
-                    style={{
-                      color: "var(--foreground-subtle)",
-                      fontSize: "0.8rem",
-                    }}
-                  >
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
                     Upload a PDF or activate the built-in consent template as
                     part of the trial creation flow.
                   </p>
                 </div>
-                <span
-                  style={{
-                    fontSize: "0.72rem",
-                    padding: "0.35rem 0.6rem",
-                    borderRadius: "999px",
-                    border: "1px solid var(--glass-border)",
-                    color: "var(--foreground-subtle)",
-                  }}
-                >
+                <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
                   Required for recruiting
                 </span>
               </div>
 
               <div className="grid gap-3 md:grid-cols-2">
                 <label
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: "0.75rem",
-                    border: `1px solid ${consentMode === "built-in"
-                        ? "var(--cyan-500)"
-                        : "var(--glass-border)"
-                      }`,
-                    borderRadius: "var(--radius)",
-                    padding: "0.9rem",
-                    cursor: "pointer",
-                  }}
+                  className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors ${
+                    consentMode === "built-in"
+                      ? "border-blue-500 bg-blue-50 dark:border-blue-500 dark:bg-blue-900/20"
+                      : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800"
+                  }`}
                 >
                   <input
                     type="radio"
@@ -461,16 +332,10 @@ export default function CreateTrialPage() {
                     style={{ marginTop: "0.15rem" }}
                   />
                   <div>
-                    <div style={{ fontWeight: 700, marginBottom: "0.2rem" }}>
+                    <div className="mb-1 font-bold text-slate-900 dark:text-white">
                       Use built-in template
                     </div>
-                    <div
-                      style={{
-                        color: "var(--foreground-subtle)",
-                        fontSize: "0.82rem",
-                        lineHeight: 1.5,
-                      }}
-                    >
+                    <div className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                       Fastest path. TrialGo will activate the default consent
                       form immediately after the trial is created.
                     </div>
@@ -478,18 +343,11 @@ export default function CreateTrialPage() {
                 </label>
 
                 <label
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: "0.75rem",
-                    border: `1px solid ${consentMode === "upload"
-                        ? "var(--cyan-500)"
-                        : "var(--glass-border)"
-                      }`,
-                    borderRadius: "var(--radius)",
-                    padding: "0.9rem",
-                    cursor: "pointer",
-                  }}
+                  className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors ${
+                    consentMode === "upload"
+                      ? "border-blue-500 bg-blue-50 dark:border-blue-500 dark:bg-blue-900/20"
+                      : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800"
+                  }`}
                 >
                   <input
                     type="radio"
@@ -499,16 +357,10 @@ export default function CreateTrialPage() {
                     style={{ marginTop: "0.15rem" }}
                   />
                   <div>
-                    <div style={{ fontWeight: 700, marginBottom: "0.2rem" }}>
+                    <div className="mb-1 font-bold text-slate-900 dark:text-white">
                       Upload consent PDF
                     </div>
-                    <div
-                      style={{
-                        color: "var(--foreground-subtle)",
-                        fontSize: "0.82rem",
-                        lineHeight: 1.5,
-                      }}
-                    >
+                    <div className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                       Use an approved PDF from your team and attach it to this
                       trial during launch.
                     </div>
@@ -517,30 +369,17 @@ export default function CreateTrialPage() {
               </div>
 
               {consentMode === "upload" && (
-                <div style={{ marginTop: "1rem" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "0.4rem",
-                      fontSize: "0.85rem",
-                      color: "var(--foreground-muted)",
-                    }}
-                  >
+                <div className="mt-4">
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
                     Consent PDF
                   </label>
                   <input
                     type="file"
                     accept="application/pdf"
                     onChange={(e) => setConsentFile(e.target.files?.[0] ?? null)}
-                    style={{ width: "100%", color: "var(--foreground-muted)" }}
+                    className="block w-full text-sm text-slate-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100 dark:text-slate-400 dark:file:bg-slate-800 dark:file:text-slate-300"
                   />
-                  <p
-                    style={{
-                      color: "var(--foreground-subtle)",
-                      fontSize: "0.8rem",
-                      marginTop: "0.35rem",
-                    }}
-                  >
+                  <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
                     The PDF will be summarized and stored when the trial is
                     launched.
                   </p>
@@ -549,26 +388,17 @@ export default function CreateTrialPage() {
             </div>
 
             {error && (
-              <p style={{ color: "var(--red-alert)", fontSize: "0.875rem" }}>
+              <p className="text-sm font-medium text-red-600 dark:text-red-400">
                 {error}
               </p>
             )}
-            <div
-              className="glass"
-              style={{
-                padding: "0.875rem 1rem",
-                borderRadius: "var(--radius)",
-                fontSize: "0.8rem",
-                color: "var(--foreground-muted)",
-              }}
-            >
+            <div className="rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
               🤖 Once created, AI Agents 1→12 will automatically begin
               recruiting and matching candidates.
             </div>
             <button
               type="submit"
-              className="btn-primary"
-              style={{ justifyContent: "center" }}
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
               disabled={loading}
             >
               {loading

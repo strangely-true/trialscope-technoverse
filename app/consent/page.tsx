@@ -1,277 +1,147 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react";
+import { PageTransition } from "@/components/ui/page-transition";
+import { Upload, FileText, CheckCircle2, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
 
-interface TrialSummary {
-  id: number
-  title: string
-  disease: string
-  stage: string
-}
+interface TrialSummary { id: number; title: string; disease: string; stage: string }
 
 export default function ConsentPage() {
-  const router = useRouter()
-  const [trials, setTrials] = useState<TrialSummary[]>([])
-  const [selectedTrialId, setSelectedTrialId] = useState<number | null>(null)
-  const [file, setFile] = useState<File | null>(null)
-  const [uploading, setUploading] = useState(false)
-  const [loadingTrials, setLoadingTrials] = useState(true)
-  const [message, setMessage] = useState("")
-  const [error, setError] = useState("")
+  const [trials, setTrials] = useState<TrialSummary[]>([]);
+  const [selectedTrialId, setSelectedTrialId] = useState<number | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [summary, setSummary] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("trialgo_token")
-    if (!token) {
-      router.push("/pharma/login")
-      return
-    }
-
-    setLoadingTrials(true)
-    fetch("/api/pharma/trials", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((response) => {
-        if (!response.ok)
-          throw new Error(`Trials fetch failed: ${response.status}`)
-        return response.json()
-      })
+    const token = localStorage.getItem("trialgo_token");
+    if (!token) return;
+    fetch("/api/pharma/trials", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.ok ? r.json() : [])
       .then((data) => {
-        const trialList = Array.isArray(data) ? data : []
-        setTrials(trialList)
-        const trialParam = Number(
-          new URLSearchParams(window.location.search).get("trial")
-        )
-        const preferredTrial =
-          trialList.find((trial) => trial.id === trialParam)?.id ??
-          trialList[0]?.id ??
-          null
-        setSelectedTrialId(preferredTrial)
+        const list = Array.isArray(data) ? data : [];
+        setTrials(list);
+        const q = Number(new URLSearchParams(window.location.search).get("trial"));
+        setSelectedTrialId(list.find((t: TrialSummary) => t.id === q)?.id ?? list[0]?.id ?? null);
       })
-      .catch((err) => {
-        console.error("Consent page trial load error:", err)
-        setError("Failed to load your trials")
-        setTrials([])
-      })
-      .finally(() => setLoadingTrials(false))
-  }, [router])
+      .catch(() => toast.error("Failed to load trials"))
+      .finally(() => setLoading(false));
+  }, []);
 
-  const submitConsent = async (useBuiltInTemplate = false) => {
-    const token = localStorage.getItem("trialgo_token")
-    if (!token || !selectedTrialId || (!file && !useBuiltInTemplate)) {
-      setError("Choose a trial and PDF, or use the built-in template")
-      return
+  const handleUpload = async (useDefault = false) => {
+    const token = localStorage.getItem("trialgo_token");
+    if (!token || !selectedTrialId || (!file && !useDefault)) {
+      toast.error("Select a trial and PDF file, or use the built-in template");
+      return;
     }
-
-    setUploading(true)
-    setMessage("")
-    setError("")
+    setUploading(true);
+    setSummary("");
     try {
-      const formData = new FormData()
-      if (file) {
-        formData.append("file", file)
-      } else {
-        formData.append("use_default_template", "true")
-      }
+      const formData = new FormData();
+      if (file) formData.append("file", file);
+      else formData.append("use_default_template", "true");
 
-      const response = await fetch(
-        `/api/consent/upload?trial_id=${selectedTrialId}`,
-        {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-          body: formData,
-        }
-      )
-
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.status}`)
-      }
-
-      const data = await response.json()
-      setMessage(
-        data.simplified_summary ||
-        (useBuiltInTemplate
-          ? "Built-in consent template activated successfully"
-          : "Consent PDF uploaded successfully")
-      )
-      setFile(null)
-    } catch (err) {
-      console.error("Consent upload error:", err)
-      setError("Could not upload the consent PDF")
+      const res = await fetch(`/api/consent/upload?trial_id=${selectedTrialId}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+      const data = await res.json();
+      setSummary(data.simplified_summary || (useDefault ? "Built-in template activated" : "Consent PDF uploaded successfully"));
+      toast.success("Consent uploaded!");
+      setFile(null);
+    } catch (err: any) {
+      toast.error(err.message || "Upload failed");
     } finally {
-      setUploading(false)
+      setUploading(false);
     }
-  }
+  };
 
   return (
-    <div style={{ background: "var(--background)", minHeight: "100vh" }}>
-      <nav
-        style={{
-          background: "rgba(5,20,36,0.95)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "1px solid var(--glass-border)",
-          padding: "1rem 1.5rem",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Link
-          href="/pharma/analytics"
-          style={{ fontFamily: "Space Grotesk", fontWeight: 700 }}
-        >
-          🧬 Trial<span className="text-cyan">Go</span>{" "}
-          <span
-            style={{ color: "var(--foreground-subtle)", fontSize: "0.8rem" }}
-          >
-            / Consent
-          </span>
-        </Link>
-        <Link
-          href="/pharma/analytics"
-          className="btn-ghost"
-          style={{ padding: "0.5rem 1rem" }}
-        >
-          Back to Analytics
-        </Link>
-      </nav>
-
-      <div className="mx-auto max-w-4xl px-6 py-10">
+    <PageTransition>
+      <div className="mx-auto max-w-2xl">
         <div className="mb-8">
-          <h1
-            style={{
-              fontFamily: "Space Grotesk",
-              fontSize: "2rem",
-              fontWeight: 700,
-            }}
-          >
-            Upload Consent PDF
+          <h1 className="flex items-center gap-3 text-2xl font-bold text-[var(--text-primary)]">
+            <FileText className="h-6 w-6 text-[var(--secondary-600)]" /> Consent Management
           </h1>
-          <p style={{ color: "var(--foreground-muted)", marginTop: "0.35rem" }}>
-            Send a trial consent document to Agent 6 for summarisation and S3
-            storage.
-          </p>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">Upload consent PDFs for AI summarisation and patient distribution</p>
         </div>
 
-        <div className="glass-card p-6">
-          {loadingTrials ? (
-            <div
-              className="py-14 text-center"
-              style={{ color: "var(--foreground-muted)" }}
-            >
-              Loading your trials...
-            </div>
-          ) : trials.length === 0 ? (
-            <div
-              className="py-14 text-center"
-              style={{ color: "var(--foreground-muted)" }}
-            >
-              No trials available. Create a trial first, then come back here.
-            </div>
-          ) : (
-            <div className="grid gap-5">
+        {loading ? (
+          <div className="flex h-40 items-center justify-center text-[var(--text-muted)]">Loading trials...</div>
+        ) : trials.length === 0 ? (
+          <div className="flex h-40 flex-col items-center justify-center gap-2 text-center">
+            <AlertCircle className="h-8 w-8 text-[var(--text-muted)]" />
+            <p className="text-[var(--text-muted)]">No trials found. Create a trial first.</p>
+          </div>
+        ) : (
+          <div className="rounded-xl border border-[var(--border-default)] bg-[var(--surface-primary)] p-6 shadow-sm dark:bg-slate-800">
+            <div className="space-y-5">
+              {/* Trial selector */}
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "0.5rem",
-                    fontWeight: 600,
-                  }}
-                >
-                  Trial
-                </label>
+                <label className="mb-2 block text-sm font-medium text-[var(--text-secondary)]">Select Trial</label>
                 <select
                   value={selectedTrialId ?? ""}
-                  onChange={(e) =>
-                    setSelectedTrialId(
-                      e.target.value ? Number(e.target.value) : null
-                    )
-                  }
-                  style={{
-                    width: "100%",
-                    background: "rgba(255,255,255,0.03)",
-                    border: "1px solid var(--glass-border)",
-                    color: "var(--foreground)",
-                    borderRadius: "var(--radius)",
-                    padding: "0.9rem 1rem",
-                  }}
+                  onChange={(e) => setSelectedTrialId(e.target.value ? Number(e.target.value) : null)}
+                  className="w-full rounded-lg border border-[var(--border-default)] bg-[var(--background)] px-4 py-2.5 text-sm text-[var(--text-primary)] focus:border-[var(--secondary-600)] focus:outline-none focus:ring-2 focus:ring-[var(--secondary-100)] dark:bg-slate-700"
                 >
-                  {trials.map((trial) => (
-                    <option key={trial.id} value={trial.id}>
-                      #{trial.id} {trial.title} · {trial.disease}
-                    </option>
-                  ))}
+                  {trials.map((t) => <option key={t.id} value={t.id}>#{t.id} {t.title} · {t.disease}</option>)}
                 </select>
               </div>
 
+              {/* File upload */}
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "0.5rem",
-                    fontWeight: 600,
-                  }}
-                >
-                  Consent PDF
-                </label>
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-                  style={{ width: "100%", color: "var(--foreground-muted)" }}
-                />
-                <p style={{ color: "var(--foreground-subtle)", fontSize: "0.8rem", marginTop: "0.35rem" }}>
-                  Leave this empty to activate the built-in consent template instead.
-                </p>
+                <label className="mb-2 block text-sm font-medium text-[var(--text-secondary)]">Consent PDF</label>
+                <div className="flex items-center justify-center rounded-xl border-2 border-dashed border-[var(--border-default)] p-8 text-center transition-colors hover:border-[var(--secondary-600)] hover:bg-[var(--secondary-50)] dark:hover:bg-slate-700/50">
+                  <label className="cursor-pointer">
+                    <Upload className="mx-auto mb-3 h-8 w-8 text-[var(--text-muted)]" />
+                    <p className="text-sm font-medium text-[var(--text-secondary)]">
+                      {file ? file.name : "Click to upload a PDF"}
+                    </p>
+                    <p className="mt-1 text-xs text-[var(--text-muted)]">Leave empty to use the built-in template</p>
+                    <input
+                      type="file"
+                      accept="application/pdf"
+                      className="hidden"
+                      onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                    />
+                  </label>
+                </div>
               </div>
 
-              {message ? (
-                <div
-                  className="rounded-xl bg-[rgba(45,212,191,0.08)] p-4 text-sm"
-                  style={{ border: "1px solid var(--green-alert)", color: "var(--green-alert)" }}
-                >
-                  {message}
+              {/* Summary result */}
+              {summary && (
+                <div className="flex items-start gap-3 rounded-xl border border-[var(--success)] bg-[var(--success-light)] p-4 dark:bg-[var(--success)]/10">
+                  <CheckCircle2 className="h-5 w-5 shrink-0 text-[var(--success)]" />
+                  <p className="text-sm text-[var(--success-dark)] dark:text-[var(--success)]">{summary}</p>
                 </div>
-              ) : null}
-              {error ? (
-                <div
-                  className="rounded-xl bg-[rgba(248,113,113,0.08)] p-4 text-sm"
-                  style={{ border: "1px solid var(--red-alert)", color: "var(--red-alert)" }}
-                >
-                  {error}
-                </div>
-              ) : null}
+              )}
 
+              {/* Actions */}
               <div className="flex flex-wrap gap-3">
                 <button
-                  onClick={() => submitConsent()}
-                  disabled={uploading}
-                  className="btn-primary"
-                  style={{ padding: "0.9rem 1.2rem" }}
+                  onClick={() => handleUpload(false)}
+                  disabled={uploading || !selectedTrialId}
+                  className="flex items-center gap-2 rounded-lg bg-[var(--secondary-600)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[var(--secondary-700)] disabled:opacity-50"
                 >
-                  {uploading ? "Uploading..." : "Upload and Summarize"}
+                  <Upload className="h-4 w-4" />
+                  {uploading ? "Uploading..." : "Upload & Summarize"}
                 </button>
                 <button
-                  onClick={() => submitConsent(true)}
-                  disabled={uploading}
-                  className="btn-ghost"
-                  style={{ padding: "0.9rem 1.2rem" }}
+                  onClick={() => handleUpload(true)}
+                  disabled={uploading || !selectedTrialId}
+                  className="rounded-lg border border-[var(--border-default)] px-5 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:border-[var(--secondary-600)] hover:text-[var(--secondary-600)] disabled:opacity-50 dark:hover:bg-slate-700"
                 >
                   Use Built-in Template
                 </button>
-                <Link
-                  href="/pharma/analytics"
-                  className="btn-ghost"
-                  style={{ padding: "0.9rem 1.2rem" }}
-                >
-                  Cancel
-                </Link>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
-    </div>
-  )
+    </PageTransition>
+  );
 }

@@ -332,39 +332,17 @@ export default function PharmaCandidatesPage() {
   }
 
   return (
-    <div style={{ background: "var(--background)", minHeight: "100vh" }}>
-      <nav
-        style={{
-          background: "rgba(5,20,36,0.95)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "1px solid var(--glass-border)",
-          padding: "1rem 1.5rem",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Link
-          href="/pharma/analytics"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            fontFamily: "Space Grotesk",
-            fontWeight: 700,
-          }}
-        >
-          🧬 Trial<span className="text-cyan">Go</span>
-          <span
-            style={{ color: "var(--foreground-subtle)", fontSize: "0.8rem" }}
-          >
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <nav className="flex items-center justify-between border-b border-slate-200 bg-white/95 px-6 py-4 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95">
+        <Link href="/pharma/analytics" className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-white">
+          🧬 Trial<span className="text-blue-600 dark:text-blue-400">Go</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400">
             / Candidates
           </span>
         </Link>
         <Link
           href="/pharma/analytics"
-          className="btn-ghost"
-          style={{ padding: "0.5rem 1rem" }}
+          className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-900 transition-colors hover:border-blue-600 hover:text-blue-600 dark:border-slate-700 dark:text-white dark:hover:border-blue-400 dark:hover:text-blue-400"
         >
           Back to Analytics
         </Link>
@@ -373,18 +351,10 @@ export default function PharmaCandidatesPage() {
       <div className="mx-auto max-w-6xl px-6 py-10">
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1
-              style={{
-                fontFamily: "Space Grotesk",
-                fontSize: "2rem",
-                fontWeight: 700,
-              }}
-            >
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
               Matched Candidates
             </h1>
-            <p
-              style={{ color: "var(--foreground-muted)", marginTop: "0.25rem" }}
-            >
+            <p className="mt-1 text-slate-500 dark:text-slate-400">
               {trial
                 ? `${trial.title} · ${trial.disease} · Stage ${trial.stage}`
                 : trialId
@@ -396,15 +366,13 @@ export default function PharmaCandidatesPage() {
             <div className="flex gap-3">
               <Link
                 href={`/consent?trial=${trialId}`}
-                className="btn-primary"
-                style={{ padding: "0.75rem 1rem" }}
+                className="flex items-center justify-center rounded-full bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/20"
               >
                 Upload Consent PDF
               </Link>
               <Link
                 href={`/pharma/fhir/${trialId}`}
-                className="btn-ghost"
-                style={{ padding: "0.75rem 1rem" }}
+                className="flex items-center justify-center rounded-full border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-900 transition-colors hover:border-blue-600 hover:text-blue-600 dark:border-slate-700 dark:text-white dark:hover:border-blue-400 dark:hover:text-blue-400"
               >
                 Export FHIR Bundle
               </Link>
@@ -415,15 +383,13 @@ export default function PharmaCandidatesPage() {
         <div className="mb-6 flex gap-3">
           <button
             onClick={() => setActiveTab("candidates")}
-            className={activeTab === "candidates" ? "btn-primary" : "btn-ghost"}
-            style={{ padding: "0.6rem 1rem" }}
+            className={activeTab === "candidates" ? "rounded-full bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-700" : "rounded-full border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-900 transition-colors hover:border-blue-600 hover:text-blue-600 dark:border-slate-700 dark:text-white"}
           >
             Enrolled & Matched Candidates
           </button>
           <button
             onClick={() => setActiveTab("leads")}
-            className={activeTab === "leads" ? "btn-primary" : "btn-ghost"}
-            style={{ padding: "0.6rem 1rem" }}
+            className={activeTab === "leads" ? "rounded-full bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-700" : "rounded-full border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-900 transition-colors hover:border-blue-600 hover:text-blue-600 dark:border-slate-700 dark:text-white"}
           >
             Social Media Leads
           </button>
@@ -431,74 +397,52 @@ export default function PharmaCandidatesPage() {
 
         {activeTab === "leads" ? (
           <div className="grid gap-4">
-            <div className="glass-card p-5">
-              <h2
-                style={{
-                  fontFamily: "Space Grotesk",
-                  fontWeight: 700,
-                  fontSize: "1.1rem",
-                  marginBottom: "0.5rem",
-                }}
-              >
+            <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
+              <h2 className="mb-2 text-lg font-bold text-slate-900 dark:text-white">
                 Potential Patients Found on Social Media
               </h2>
-              <p
-                style={{ color: "var(--foreground-muted)", fontSize: "0.9rem" }}
-              >
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 These people posted about {trial?.disease || "this condition"}{" "}
                 on Reddit or Twitter. AI flagged likely patient context. You
                 decide whether to reach out.
               </p>
-              <p
-                style={{
-                  marginTop: "0.8rem",
-                  color: "var(--foreground-subtle)",
-                  fontSize: "0.85rem",
-                }}
-              >
+              <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
                 {leadStats.total} potential leads found — {leadStats.high} HIGH
                 confidence, {leadStats.medium} MEDIUM confidence
               </p>
             </div>
 
             {leadsLoading ? (
-              <div
-                className="py-14 text-center"
-                style={{ color: "var(--foreground-muted)" }}
-              >
+              <div className="py-14 text-center text-slate-500 dark:text-slate-400">
                 Loading social leads...
               </div>
             ) : leadsError ? (
-              <div
-                className="py-14 text-center"
-                style={{ color: "var(--foreground-error)" }}
-              >
+              <div className="py-14 text-center text-red-500 dark:text-red-400">
                 {leadsError}
               </div>
             ) : socialLeads.length === 0 ? (
-              <div
-                className="glass-card py-14 text-center"
-                style={{ color: "var(--foreground-muted)" }}
-              >
+              <div className="rounded-xl border border-slate-200 bg-white py-14 text-center text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
                 No pending social leads yet for this trial.
               </div>
             ) : (
               socialLeads.map((lead) => (
-                <div key={lead.id} className="glass-card p-5">
+                <div key={lead.id} className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
                   <div className="mb-2 flex flex-wrap items-center gap-2">
-                    <span className="badge-cyan">
+                    <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
                       {lead.platform === "reddit" ? "Reddit" : "Twitter/X"}
                     </span>
                     <span
                       className={
-                        lead.confidence >= 0.75 ? "badge-green" : "badge-amber"
+                        lead.confidence >= 0.75
+                          ? "rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                          : "rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
                       }
                     >
                       {lead.confidence >= 0.75
                         ? "HIGH CONFIDENCE"
                         : "MEDIUM CONFIDENCE"}
                     </span>
-                    <span className="badge-amber">
+                    <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
                       {lead.relation === "self"
                         ? "Self"
                         : lead.relation === "family_member"
@@ -512,7 +456,7 @@ export default function PharmaCandidatesPage() {
                       href={lead.profile_url || "#"}
                       target="_blank"
                       rel="noreferrer"
-                      style={{ color: "var(--primary)", fontWeight: 600 }}
+                      className="font-semibold text-blue-600 dark:text-blue-400"
                     >
                       {lead.platform === "reddit"
                         ? `u/${lead.username}`
@@ -520,21 +464,10 @@ export default function PharmaCandidatesPage() {
                     </a>
                   </div>
 
-                  <p
-                    style={{
-                      color: "var(--foreground-muted)",
-                      fontSize: "0.85rem",
-                    }}
-                  >
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
                     AI reasoning: {lead.reasoning || "No reasoning"}
                   </p>
-                  <p
-                    style={{
-                      color: "var(--foreground-muted)",
-                      fontSize: "0.85rem",
-                      marginTop: "0.35rem",
-                    }}
-                  >
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                     Post preview: {(lead.post_text || "").slice(0, 150)}
                     {(lead.post_text || "").length > 150 ? "..." : ""}
                   </p>
@@ -543,12 +476,7 @@ export default function PharmaCandidatesPage() {
                       href={lead.post_url}
                       target="_blank"
                       rel="noreferrer"
-                      style={{
-                        display: "inline-block",
-                        color: "var(--primary)",
-                        marginTop: "0.5rem",
-                        fontSize: "0.85rem",
-                      }}
+                      className="mt-2 inline-block text-sm text-blue-600 dark:text-blue-400"
                     >
                       View Original Post
                     </a>
@@ -558,8 +486,7 @@ export default function PharmaCandidatesPage() {
                     <button
                       onClick={() => sendLeadDM(lead)}
                       disabled={leadActionId === lead.id || lead.dm_sent}
-                      className={lead.dm_sent ? "btn-ghost" : "btn-primary"}
-                      style={{ padding: "0.6rem 0.95rem" }}
+                      className={lead.dm_sent ? "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-900 dark:border-slate-700 dark:text-white" : "rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"}
                     >
                       {lead.dm_sent
                         ? "DM SENT"
@@ -570,8 +497,7 @@ export default function PharmaCandidatesPage() {
                     <button
                       onClick={() => rejectLead(lead)}
                       disabled={leadActionId === lead.id || lead.dm_sent}
-                      className="btn-ghost"
-                      style={{ padding: "0.6rem 0.95rem" }}
+                      className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-900 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-white dark:hover:bg-slate-800"
                     >
                       REJECT
                     </button>
@@ -580,41 +506,28 @@ export default function PharmaCandidatesPage() {
               ))
             )}
 
-            <div
-              className="glass-card p-4"
-              style={{ color: "var(--foreground-subtle)", fontSize: "0.8rem" }}
-            >
+            <div className="rounded-xl border border-slate-200 bg-white p-4 text-xs text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
               TrialGo only shows you potential leads. You are responsible for
               outreach content and compliance with platform terms.
             </div>
           </div>
         ) : loading ? (
-          <div
-            className="py-20 text-center"
-            style={{ color: "var(--foreground-muted)" }}
-          >
+          <div className="py-20 text-center text-slate-500 dark:text-slate-400">
             <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>🔄</div>
             Loading candidate list...
           </div>
         ) : error ? (
-          <div
-            className="py-20 text-center"
-            style={{ color: "var(--foreground-error)" }}
-          >
+          <div className="py-20 text-center text-red-500 dark:text-red-400">
             <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>⚠️</div>
             {error}
           </div>
         ) : candidates.length === 0 ? (
-          <div
-            className="glass-card py-20 text-center"
-            style={{ color: "var(--foreground-muted)" }}
-          >
+          <div className="rounded-xl border border-slate-200 bg-white py-20 text-center text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
             <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>👥</div>
             <p>No matched candidates yet for this trial.</p>
             <Link
               href={`/pharma/fhir/${trialId}`}
-              className="btn-primary"
-              style={{ marginTop: "1rem", display: "inline-block" }}
+              className="mt-4 inline-block rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/20"
             >
               Review Export Snapshot
             </Link>
@@ -630,57 +543,33 @@ export default function PharmaCandidatesPage() {
                     ? "badge-amber"
                     : "badge-green"
               return (
-                <div key={candidate.id} className="glass-card p-5">
+                <div key={candidate.id} className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
                   <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
                       <div className="mb-2 flex flex-wrap gap-2">
-                        <span className="badge-cyan">
+                        <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
                           Candidate #{candidate.candidate_id}
                         </span>
                         <span className={tierClass}>
                           {candidate.match_tier}
                         </span>
-                        <span className="badge-green">{candidate.status}</span>
+                        <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">{candidate.status}</span>
                       </div>
-                      <h3
-                        style={{
-                          fontFamily: "Space Grotesk",
-                          fontWeight: 600,
-                          fontSize: "1.05rem",
-                        }}
-                      >
+                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
                         Match Score {Math.round(candidate.match_score * 100)}%
                       </h3>
-                      <p
-                        style={{
-                          color: "var(--foreground-muted)",
-                          fontSize: "0.85rem",
-                          marginTop: "0.35rem",
-                        }}
-                      >
+                      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                         Created{" "}
                         {new Date(candidate.created_at).toLocaleString()}
                       </p>
                       {candidate.candidate?.user_handle ? (
-                        <p
-                          style={{
-                            color: "var(--foreground-muted)",
-                            fontSize: "0.85rem",
-                            marginTop: "0.35rem",
-                          }}
-                        >
+                        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                           Handle: {candidate.candidate.user_handle}
                         </p>
                       ) : null}
                       {Array.isArray(candidate.candidate?.extracted_symptoms) &&
                         candidate.candidate.extracted_symptoms.length > 0 ? (
-                        <p
-                          style={{
-                            color: "var(--foreground-muted)",
-                            fontSize: "0.85rem",
-                            marginTop: "0.35rem",
-                          }}
-                        >
+                        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                           Symptoms:{" "}
                           {candidate.candidate.extracted_symptoms.join(", ")}
                         </p>
@@ -690,15 +579,14 @@ export default function PharmaCandidatesPage() {
                       <button
                         onClick={() => revealIdentity(candidate.candidate_id)}
                         disabled={submittingId === candidate.candidate_id}
-                        className="btn-ghost"
-                        style={{ padding: "0.75rem 1rem", minWidth: "180px" }}
+                        className="flex min-w-[180px] items-center justify-center rounded-lg border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-900 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-white dark:hover:bg-slate-800"
                       >
                         {submittingId === candidate.candidate_id
                           ? "Revealing..."
                           : "Reveal Identity"}
                       </button>
                       {revealError[candidate.candidate_id] && (
-                        <span className="text-sm text-(--foreground-error)">
+                        <span className="text-sm text-red-500 dark:text-red-400">
                           {revealError[candidate.candidate_id]}
                         </span>
                       )}
@@ -706,8 +594,8 @@ export default function PharmaCandidatesPage() {
                   </div>
 
                   {reveal ? (
-                    <div className="mt-4 rounded-xl border border-(--glass-border) bg-[rgba(255,255,255,0.03)] p-4 text-sm">
-                      <div className="mb-2 font-semibold text-(--primary)">
+                    <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm dark:border-slate-700 dark:bg-slate-800/50">
+                      <div className="mb-2 font-semibold text-blue-600 dark:text-blue-400">
                         Identity revealed
                       </div>
                       <div className="grid gap-2 md:grid-cols-3">
@@ -734,8 +622,7 @@ export default function PharmaCandidatesPage() {
                         <div style={{ marginTop: "1rem" }}>
                           <button
                             onClick={() => downloadConsentPdf(reveal.consent_subject_id)}
-                            className="btn-primary"
-                            style={{ padding: "0.65rem 1rem" }}
+                            className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-700"
                           >
                             Download Signed Consent PDF
                           </button>

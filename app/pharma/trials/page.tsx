@@ -1,178 +1,130 @@
-"use client"
-import { useEffect, useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { PageTransition } from "@/components/ui/page-transition";
+import { Plus, FlaskConical, Users, BarChart2, FileText } from "lucide-react";
 
 interface Trial {
-  id: number
-  title: string
-  disease: string
-  stage: string | null
-  status: string
-  patients_needed: number
-  created_at: string
-  description: string | null
+  id: number;
+  title: string;
+  disease: string;
+  stage: string | null;
+  status: string;
+  patients_needed: number;
+  created_at: string;
+  description: string | null;
 }
 
+const STATUS_STYLES: Record<string, string> = {
+  active: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  paused: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  completed: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  draft: "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400",
+};
+
 export default function PharmaTrialsPage() {
-  const router = useRouter()
-  const [trials, setTrials] = useState<Trial[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
+  const [trials, setTrials] = useState<Trial[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("trialgo_token")
-    const role = localStorage.getItem("trialgo_role")
-    if (!token || role !== "pharma") {
-      router.push("/pharma/login")
-      return
-    }
-
-    fetch("/api/pharma/trials", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => {
-        if (!r.ok) throw new Error(`Failed: ${r.status}`)
-        return r.json()
-      })
-      .then((data) => {
-        setTrials(Array.isArray(data) ? data : [])
-      })
+    const token = localStorage.getItem("trialgo_token");
+    if (!token) return;
+    fetch("/api/pharma/trials", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.ok ? r.json() : [])
+      .then((data) => setTrials(Array.isArray(data) ? data : []))
       .catch((e) => setError(e.message))
-      .finally(() => setLoading(false))
-  }, [router])
-
-  const statusColor: Record<string, string> = {
-    active: "badge-green",
-    paused: "badge-amber",
-    completed: "badge-cyan",
-    draft: "badge-red",
-  }
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
-    <div style={{ background: "var(--background)", minHeight: "100vh" }}>
-      {/* Header */}
-      <div
-        style={{
-          background: "rgba(5,20,36,0.95)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "1px solid var(--glass-border)",
-          padding: "0.875rem 1.5rem",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          position: "sticky",
-          top: 0,
-          zIndex: 50,
-        }}
-      >
-        <Link
-          href="/"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            fontFamily: "Space Grotesk",
-            fontWeight: 700,
-          }}
-        >
-          🧬 Trial<span className="text-cyan">Go</span>
-          <span style={{ color: "var(--foreground-subtle)", fontSize: "0.8rem", marginLeft: "0.5rem" }}>
-            / My Trials
-          </span>
-        </Link>
-        <div className="flex items-center gap-4">
-          <Link href="/pharma/create-trial" className="btn-primary" style={{ padding: "0.5rem 1rem", fontSize: "0.85rem" }}>
-            + New Trial
-          </Link>
-          <button
-            onClick={() => { localStorage.clear(); router.push("/pharma/login") }}
-            style={{ color: "var(--foreground-subtle)", fontSize: "0.85rem", background: "none", border: "none", cursor: "pointer" }}
+    <PageTransition>
+      <div>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">My Clinical Trials</h1>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Manage and monitor all your active trials
+            </p>
+          </div>
+          <Link
+            href="/pharma/create-trial"
+            className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
           >
-            Logout
-          </button>
-        </div>
-      </div>
-
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "2rem 1.5rem" }}>
-        <div style={{ marginBottom: "2rem" }}>
-          <h1 style={{ fontFamily: "Space Grotesk", fontSize: "1.75rem", fontWeight: 700, marginBottom: "0.5rem" }}>
-            My Clinical Trials
-          </h1>
-          <p style={{ color: "var(--foreground-muted)", fontSize: "0.95rem" }}>
-            Manage and monitor all your active trials. Click a trial to view matched candidates.
-          </p>
+            <Plus className="h-4 w-4" /> New Trial
+          </Link>
         </div>
 
         {loading ? (
-          <div className="py-20 text-center" style={{ color: "var(--foreground-muted)" }}>
-            <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>🔄</div>
-            Loading your trials...
+          <div className="flex h-64 items-center justify-center text-slate-500 dark:text-slate-400">
+            Loading trials...
           </div>
         ) : error ? (
-          <div className="glass-card p-8 text-center" style={{ color: "var(--foreground-error)" }}>
-            <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>⚠️</div>
-            <div>{error}</div>
+          <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center text-red-600 dark:border-red-800 dark:bg-red-900/10">
+            {error}
           </div>
         ) : trials.length === 0 ? (
-          <div className="glass-card p-12 text-center">
-            <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🏥</div>
-            <h2 style={{ fontFamily: "Space Grotesk", fontSize: "1.25rem", fontWeight: 600, marginBottom: "0.75rem" }}>
-              No Trials Yet
-            </h2>
-            <p style={{ color: "var(--foreground-muted)", marginBottom: "1.5rem" }}>
-              Create your first clinical trial and let 12 AI agents handle candidate discovery.
-            </p>
-            <Link href="/pharma/create-trial" className="btn-primary">
-              Create First Trial →
+          <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-slate-200 p-16 text-center dark:border-slate-700">
+            <FlaskConical className="h-12 w-12 text-slate-400 dark:text-slate-500" />
+            <div>
+              <p className="text-lg font-semibold text-slate-900 dark:text-white">No Trials Yet</p>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                Create your first trial and let 12 AI agents handle candidate discovery
+              </p>
+            </div>
+            <Link
+              href="/pharma/create-trial"
+              className="mt-2 flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+            >
+              <Plus className="h-4 w-4" /> Create First Trial
             </Link>
           </div>
         ) : (
           <div className="grid gap-4">
             {trials.map((trial) => (
-              <div key={trial.id} className="glass-card p-6">
-                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
-                      <span style={{ fontFamily: "Space Grotesk", fontWeight: 700, fontSize: "1.1rem" }}>
-                        {trial.title}
-                      </span>
-                      <span className={statusColor[trial.status] || "badge-cyan"} style={{ fontSize: "0.7rem" }}>
-                        {trial.status.toUpperCase()}
+              <div
+                key={trial.id}
+                className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-blue-600 hover:shadow-md dark:border-slate-700 dark:bg-slate-800"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="mb-2 flex flex-wrap items-center gap-3">
+                      <span className="text-lg font-bold text-slate-900 dark:text-white">{trial.title}</span>
+                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase ${STATUS_STYLES[trial.status] || STATUS_STYLES.draft}`}>
+                        {trial.status}
                       </span>
                     </div>
-                    <div style={{ display: "flex", gap: "1.5rem", color: "var(--foreground-muted)", fontSize: "0.875rem", marginBottom: "0.75rem", flexWrap: "wrap" }}>
-                      <span>🦠 {trial.disease}{trial.stage ? ` • Stage ${trial.stage}` : ""}</span>
-                      <span>👥 {trial.patients_needed} patients needed</span>
+                    <div className="mb-3 flex flex-wrap gap-4 text-sm text-slate-500 dark:text-slate-400">
+                      <span>🦠 {trial.disease}{trial.stage ? ` · Stage ${trial.stage}` : ""}</span>
+                      <span className="flex items-center gap-1">
+                        <Users className="h-3.5 w-3.5" /> {trial.patients_needed} patients needed
+                      </span>
                       <span>📅 {new Date(trial.created_at).toLocaleDateString()}</span>
                     </div>
                     {trial.description && (
-                      <p style={{ color: "var(--foreground-subtle)", fontSize: "0.875rem", lineHeight: 1.6 }}>
-                        {trial.description.slice(0, 200)}{trial.description.length > 200 ? "…" : ""}
-                      </p>
+                      <p className="text-sm text-slate-600 line-clamp-2 dark:text-slate-300">{trial.description}</p>
                     )}
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", minWidth: "160px" }}>
+
+                  <div className="flex shrink-0 flex-col gap-2">
                     <Link
                       href={`/pharma/candidates/${trial.id}`}
-                      className="btn-primary"
-                      style={{ padding: "0.6rem 1rem", fontSize: "0.85rem", textAlign: "center" }}
+                      className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
                     >
-                      View Candidates →
-                    </Link>
-                    <Link
-                      href={`/consent?trial=${trial.id}`}
-                      className="btn-ghost"
-                      style={{ padding: "0.6rem 1rem", fontSize: "0.85rem", textAlign: "center" }}
-                    >
-                      Manage Consent
+                      <Users className="h-4 w-4" /> Candidates
                     </Link>
                     <Link
                       href={`/pharma/analytics?trial=${trial.id}`}
-                      className="btn-ghost"
-                      style={{ padding: "0.6rem 1rem", fontSize: "0.85rem", textAlign: "center" }}
+                      className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:border-blue-600 hover:text-blue-600 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-700"
                     >
-                      Analytics 📊
+                      <BarChart2 className="h-4 w-4" /> Analytics
+                    </Link>
+                    <Link
+                      href={`/consent?trial=${trial.id}`}
+                      className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:border-blue-600 hover:text-blue-600 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-700"
+                    >
+                      <FileText className="h-4 w-4" /> Consent
                     </Link>
                   </div>
                 </div>
@@ -181,6 +133,6 @@ export default function PharmaTrialsPage() {
           </div>
         )}
       </div>
-    </div>
-  )
+    </PageTransition>
+  );
 }

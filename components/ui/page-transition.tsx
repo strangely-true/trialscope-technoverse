@@ -1,11 +1,11 @@
-"use client";
+"use client"
 
-import { ReactNode } from "react";
+import { ReactNode } from "react"
 
 interface PageTransitionProps {
-  children: ReactNode;
-  duration?: number;
-  delay?: number;
+  children: ReactNode
+  duration?: number
+  delay?: number
 }
 
 /**
@@ -42,7 +42,7 @@ export function PageTransition({
     >
       {children}
     </div>
-  );
+  )
 }
 
 /**
@@ -73,11 +73,11 @@ export function PageTransitionStaggered({
   duration = 300,
   staggerDelay = 100,
 }: {
-  children: ReactNode;
-  duration?: number;
-  staggerDelay?: number;
+  children: ReactNode
+  duration?: number
+  staggerDelay?: number
 }) {
-  const childrenArray = Array.isArray(children) ? children : [children];
+  const childrenArray = Array.isArray(children) ? children : [children]
 
   return (
     <>
@@ -91,7 +91,7 @@ export function PageTransitionStaggered({
         </PageTransition>
       ))}
     </>
-  );
+  )
 }
 
 /**
@@ -99,14 +99,10 @@ export function PageTransitionStaggered({
  *
  * Quicker animation for non-page transitions
  */
-export function TransitionFast({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function TransitionFast({ children }: { children: ReactNode }) {
   return (
     <PageTransition duration={150} delay={0}>
       {children}
     </PageTransition>
-  );
+  )
 }

@@ -1,10 +1,10 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter, useParams } from "next/navigation";
-import { PageTransition } from "@/components/ui/page-transition";
-import { TrialGoLoaderFullPage } from "@/components/ui/trialgo-loader";
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { useRouter, useParams } from "next/navigation"
+import { PageTransition } from "@/components/ui/page-transition"
+import { TrialGoLoaderFullPage } from "@/components/ui/trialgo-loader"
 import {
   ArrowLeft,
   LogOut,
@@ -13,55 +13,55 @@ import {
   ChevronDown,
   ChevronUp,
   FileText,
-} from "lucide-react";
+} from "lucide-react"
 
 interface Trial {
-  id: number;
-  title: string;
-  disease: string;
-  stage: string;
-  age_min: number;
-  age_max: number;
-  gender: string;
-  location_preference: string;
-  exclusion_criteria: string;
-  inclusion_criteria: string;
-  patients_needed: number;
-  description: string;
-  status: string;
-  created_at: string;
-  consent_summary?: string[];
+  id: number
+  title: string
+  disease: string
+  stage: string
+  age_min: number
+  age_max: number
+  gender: string
+  location_preference: string
+  exclusion_criteria: string
+  inclusion_criteria: string
+  patients_needed: number
+  description: string
+  status: string
+  created_at: string
+  consent_summary?: string[]
 }
 
 interface ConsentTemplate {
-  trial_id: number;
-  title: string;
-  consent_template_text: string;
-  consent_template_name?: string | null;
-  consent_template_url?: string | null;
-  consent_version: number;
-  source: string;
+  trial_id: number
+  title: string
+  consent_template_text: string
+  consent_template_name?: string | null
+  consent_template_url?: string | null
+  consent_version: number
+  source: string
 }
 
 interface ConsentSubmission {
-  id: number;
-  trial_id: number;
-  hash_id: string;
-  typed_name: string;
-  acknowledged: boolean;
-  signed_pdf_url?: string | null;
-  signed_at: string;
+  id: number
+  trial_id: number
+  hash_id: string
+  typed_name: string
+  acknowledged: boolean
+  signed_pdf_url?: string | null
+  signed_at: string
 }
 
 interface HistoryFormSchema {
   fields: Array<{
-    name: string;
-    type: string;
-    label: string;
-    required: boolean;
-    options?: string[];
-  }>;
-  already_applied?: boolean;
+    name: string
+    type: string
+    label: string
+    required: boolean
+    options?: string[]
+  }>
+  already_applied?: boolean
 }
 
 function extractConsentFields(text: string): string[] {
@@ -71,60 +71,64 @@ function extractConsentFields(text: string): string[] {
         .map((match) => match.replace(/^\[\[|\]\]$|^\{\{|\}\}$/g, "").trim())
         .filter(Boolean)
     )
-  );
+  )
 }
 
 function renderConsentText(
   template: string,
   values: Record<string, string>
 ): string {
-  let text = template;
-  const fields = extractConsentFields(template);
+  let text = template
+  const fields = extractConsentFields(template)
   fields.forEach((field) => {
-    const value = values[field] || `[${field}]`;
+    const value = values[field] || `[${field}]`
     text = text
       .replace(new RegExp(`\\[\\[${field}\\]\\]`, "g"), value)
-      .replace(new RegExp(`\\{\\{${field}\\}\\}`, "g"), value);
-  });
-  return text;
+      .replace(new RegExp(`\\{\\{${field}\\}\\}`, "g"), value)
+  })
+  return text
 }
 
 export default function TrialDetailPage() {
-  const router = useRouter();
-  const params = useParams();
-  const trialId = params.id as string;
+  const router = useRouter()
+  const params = useParams()
+  const trialId = params.id as string
 
-  const [trial, setTrial] = useState<Trial | null>(null);
-  const [formSchema, setFormSchema] = useState<HistoryFormSchema | null>(null);
-  const [consentTemplate, setConsentTemplate] = useState<ConsentTemplate | null>(null);
-  const [consentSubmission, setConsentSubmission] = useState<ConsentSubmission | null>(null);
+  const [trial, setTrial] = useState<Trial | null>(null)
+  const [formSchema, setFormSchema] = useState<HistoryFormSchema | null>(null)
+  const [consentTemplate, setConsentTemplate] =
+    useState<ConsentTemplate | null>(null)
+  const [consentSubmission, setConsentSubmission] =
+    useState<ConsentSubmission | null>(null)
 
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [consentSubmitting, setConsentSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
+  const [consentSubmitting, setConsentSubmitting] = useState(false)
 
-  const [error, setError] = useState<string>("");
-  const [success, setSuccess] = useState<string>("");
-  const [consentError, setConsentError] = useState<string>("");
-  const [consentMessage, setConsentMessage] = useState<string>("");
+  const [error, setError] = useState<string>("")
+  const [success, setSuccess] = useState<string>("")
+  const [consentError, setConsentError] = useState<string>("")
+  const [consentMessage, setConsentMessage] = useState<string>("")
 
-  const [formData, setFormData] = useState<Record<string, string>>({});
-  const [consentInputs, setConsentInputs] = useState<Record<string, string>>({});
-  const [consentTypedName, setConsentTypedName] = useState("");
-  const [consentAcknowledged, setConsentAcknowledged] = useState(false);
-  const [showConsentPreview, setShowConsentPreview] = useState(false);
+  const [formData, setFormData] = useState<Record<string, string>>({})
+  const [consentInputs, setConsentInputs] = useState<Record<string, string>>({})
+  const [consentTypedName, setConsentTypedName] = useState("")
+  const [consentAcknowledged, setConsentAcknowledged] = useState(false)
+  const [showConsentPreview, setShowConsentPreview] = useState(false)
 
-  const consentFields = extractConsentFields(consentTemplate?.consent_template_text ?? "");
+  const consentFields = extractConsentFields(
+    consentTemplate?.consent_template_text ?? ""
+  )
 
   useEffect(() => {
-    const token = localStorage.getItem("trialgo_token");
+    const token = localStorage.getItem("trialgo_token")
     if (!token) {
-      router.push("/login");
-      return;
+      router.push("/login")
+      return
     }
 
-    setLoading(true);
-    const headers = { Authorization: `Bearer ${token}` };
+    setLoading(true)
+    const headers = { Authorization: `Bearer ${token}` }
 
     Promise.all([
       fetch(`/api/trials/${trialId}`, { headers }).then((r) =>
@@ -138,51 +142,55 @@ export default function TrialDetailPage() {
       ),
     ])
       .then(([trialData, schemaData, consentData]) => {
-        setTrial(trialData);
-        setFormSchema(schemaData);
-        setConsentTemplate(consentData);
+        setTrial(trialData)
+        setFormSchema(schemaData)
+        setConsentTemplate(consentData)
 
         // Pre-fill form
         if (schemaData.prefill) {
-          const initialData: Record<string, string> = {};
+          const initialData: Record<string, string> = {}
           Object.entries(schemaData.prefill).forEach(([key, value]) => {
             if (value !== null && value !== undefined) {
-              initialData[key] = String(value);
+              initialData[key] = String(value)
             }
-          });
-          setFormData(initialData);
+          })
+          setFormData(initialData)
 
-          const consentInitial: Record<string, string> = {};
-          const consentFieldNames = extractConsentFields(consentData.consent_template_text);
+          const consentInitial: Record<string, string> = {}
+          const consentFieldNames = extractConsentFields(
+            consentData.consent_template_text
+          )
           consentFieldNames.forEach((field) => {
             if (field === "participant_name" && initialData.full_name) {
-              consentInitial[field] = initialData.full_name;
+              consentInitial[field] = initialData.full_name
             } else if (field === "city" && initialData.city) {
-              consentInitial[field] = initialData.city;
+              consentInitial[field] = initialData.city
             } else if (field === "country" && initialData.country) {
-              consentInitial[field] = initialData.country;
+              consentInitial[field] = initialData.country
             }
-          });
-          setConsentInputs(consentInitial);
+          })
+          setConsentInputs(consentInitial)
         }
 
-        setError("");
+        setError("")
       })
       .catch((err) => {
-        console.error("Fetch error:", err);
-        setError("Failed to load trial details");
+        console.error("Fetch error:", err)
+        setError("Failed to load trial details")
       })
-      .finally(() => setLoading(false));
-  }, [router, trialId]);
+      .finally(() => setLoading(false))
+  }, [router, trialId])
 
   const handleFormChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
-    }));
-  };
+    }))
+  }
 
   const handleConsentFieldChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -190,36 +198,36 @@ export default function TrialDetailPage() {
     setConsentInputs((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
-    }));
-  };
+    }))
+  }
 
   const submitConsent = async () => {
     if (!consentTemplate) {
-      setConsentError("Consent template not loaded");
-      return;
+      setConsentError("Consent template not loaded")
+      return
     }
     if (!consentAcknowledged || !consentTypedName.trim()) {
-      setConsentError("Please confirm and type your name");
-      return;
+      setConsentError("Please confirm and type your name")
+      return
     }
 
     const missing = consentFields.filter(
       (field) => !String(consentInputs[field] ?? "").trim()
-    );
+    )
     if (missing.length > 0) {
-      setConsentError(`Please complete: ${missing.join(", ")}`);
-      return;
+      setConsentError(`Please complete: ${missing.join(", ")}`)
+      return
     }
 
-    const token = localStorage.getItem("trialgo_token");
+    const token = localStorage.getItem("trialgo_token")
     if (!token) {
-      router.push("/login");
-      return;
+      router.push("/login")
+      return
     }
 
-    setConsentSubmitting(true);
-    setConsentError("");
-    setConsentMessage("");
+    setConsentSubmitting(true)
+    setConsentError("")
+    setConsentMessage("")
 
     try {
       const response = await fetch("/api/consent/submit", {
@@ -234,34 +242,34 @@ export default function TrialDetailPage() {
           acknowledged: consentAcknowledged,
           field_values: consentInputs,
         }),
-      });
+      })
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || "Consent submit failed");
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.detail || "Consent submit failed")
 
-      setConsentSubmission(data);
-      setConsentMessage("✅ Consent signed successfully!");
+      setConsentSubmission(data)
+      setConsentMessage("✅ Consent signed successfully!")
     } catch (err: any) {
-      setConsentError(err.message || "Failed to submit consent");
+      setConsentError(err.message || "Failed to submit consent")
     } finally {
-      setConsentSubmitting(false);
+      setConsentSubmitting(false)
     }
-  };
+  }
 
   const handleSubmitApplication = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!consentSubmission) {
-      setError("Please sign the consent first");
-      return;
+      setError("Please sign the consent first")
+      return
     }
 
-    setSubmitting(true);
-    setError("");
-    setSuccess("");
+    setSubmitting(true)
+    setError("")
+    setSuccess("")
 
     try {
-      const token = localStorage.getItem("trialgo_token");
-      if (!token) throw new Error("Not authenticated");
+      const token = localStorage.getItem("trialgo_token")
+      if (!token) throw new Error("Not authenticated")
 
       const payload: any = {
         trial_id: parseInt(trialId),
@@ -277,16 +285,18 @@ export default function TrialDetailPage() {
         previous_treatments: formData["previous_treatments"] || undefined,
         doctor_contact: formData["doctor_contact"] || undefined,
         consent_given: true,
-      };
+      }
 
       if (formData["diagnosed_conditions"]) {
         try {
-          const parsed = JSON.parse(formData["diagnosed_conditions"]);
-          payload.diagnosed_conditions = Array.isArray(parsed) ? parsed : [parsed];
+          const parsed = JSON.parse(formData["diagnosed_conditions"])
+          payload.diagnosed_conditions = Array.isArray(parsed)
+            ? parsed
+            : [parsed]
         } catch {
           payload.diagnosed_conditions = formData["diagnosed_conditions"]
             .split(",")
-            .map((s) => s.trim());
+            .map((s) => s.trim())
         }
       }
 
@@ -297,50 +307,50 @@ export default function TrialDetailPage() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
-      });
+      })
 
       if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text || `Failed with status ${response.status}`);
+        const text = await response.text()
+        throw new Error(text || `Failed with status ${response.status}`)
       }
 
-      setSuccess("✅ Application submitted! Redirecting to dashboard...");
-      setTimeout(() => router.push("/dashboard"), 2000);
+      setSuccess("✅ Application submitted! Redirecting to dashboard...")
+      setTimeout(() => router.push("/dashboard"), 2000)
     } catch (err: any) {
-      setError(err.message || "Failed to submit application");
+      setError(err.message || "Failed to submit application")
     } finally {
-      setSubmitting(false);
+      setSubmitting(false)
     }
-  };
+  }
 
   if (loading) {
-    return <TrialGoLoaderFullPage label="Loading trial details..." />;
+    return <TrialGoLoaderFullPage label="Loading trial details..." />
   }
 
   if (error || !trial) {
     return (
-      <div className="min-h-screen bg-background dark:bg-slate-900">
-        <header className="border-b border-border-default dark:border-border-subtle bg-surface-primary/80 dark:bg-slate-800/80 backdrop-blur-xl">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center gap-4">
+      <div className="bg-background min-h-screen dark:bg-slate-900">
+        <header className="border-border-default dark:border-border-subtle bg-surface-primary/80 border-b backdrop-blur-xl dark:bg-slate-800/80">
+          <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4 sm:px-6 lg:px-8">
             <Link
               href="/trials"
-              className="inline-flex items-center gap-2 text-secondary-600 hover:text-secondary-700 dark:text-secondary-400 dark:hover:text-secondary-300 transition-colors"
+              className="text-secondary-600 hover:text-secondary-700 dark:text-secondary-400 dark:hover:text-secondary-300 inline-flex items-center gap-2 transition-colors"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="h-4 w-4" />
               Back to Trials
             </Link>
           </div>
         </header>
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="rounded-lg bg-danger-light/10 dark:bg-danger/10 border border-danger-light dark:border-danger/30 p-6">
+        <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <div className="bg-danger-light/10 dark:bg-danger/10 border-danger-light dark:border-danger/30 rounded-lg border p-6">
             <div className="flex gap-4">
-              <AlertCircle className="w-6 h-6 text-danger dark:text-danger-light flex-shrink-0 mt-0.5" />
+              <AlertCircle className="text-danger dark:text-danger-light mt-0.5 h-6 w-6 flex-shrink-0" />
               <div>
-                <h3 className="font-semibold text-danger dark:text-danger-light mb-1">
+                <h3 className="text-danger dark:text-danger-light mb-1 font-semibold">
                   Unable to load trial
                 </h3>
-                <p className="text-sm text-danger dark:text-danger-light">
+                <p className="text-danger dark:text-danger-light text-sm">
                   {error || "Trial not found"}
                 </p>
               </div>
@@ -348,48 +358,48 @@ export default function TrialDetailPage() {
           </div>
         </main>
       </div>
-    );
+    )
   }
 
   return (
-    <div className="min-h-screen bg-background dark:bg-slate-900">
+    <div className="bg-background min-h-screen dark:bg-slate-900">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-border-default dark:border-border-subtle bg-surface-primary/80 dark:bg-slate-800/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+      <header className="border-border-default dark:border-border-subtle bg-surface-primary/80 sticky top-0 z-40 border-b backdrop-blur-xl dark:bg-slate-800/80">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link
             href="/trials"
-            className="inline-flex items-center gap-2 text-secondary-600 hover:text-secondary-700 dark:text-secondary-400 dark:hover:text-secondary-300 transition-colors"
+            className="text-secondary-600 hover:text-secondary-700 dark:text-secondary-400 dark:hover:text-secondary-300 inline-flex items-center gap-2 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="h-4 w-4" />
             Back to Trials
           </Link>
 
           <button
             onClick={() => {
-              localStorage.removeItem("trialgo_token");
-              localStorage.removeItem("trialgo_role");
-              localStorage.removeItem("trialgo_user_id");
-              localStorage.removeItem("trialgo_user");
-              router.push("/login");
+              localStorage.removeItem("trialgo_token")
+              localStorage.removeItem("trialgo_role")
+              localStorage.removeItem("trialgo_user_id")
+              localStorage.removeItem("trialgo_user")
+              router.push("/login")
             }}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-danger dark:text-danger-light hover:bg-danger-light/10 dark:hover:bg-danger/10 transition-colors flex items-center gap-2"
+            className="text-danger dark:text-danger-light hover:bg-danger-light/10 dark:hover:bg-danger/10 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="h-4 w-4" />
             Sign Out
           </button>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
         <PageTransition>
           {/* Trial Header */}
-          <div className="rounded-xl border border-border-default dark:border-border-subtle bg-surface-primary dark:bg-slate-800 p-8 shadow-sm mb-8">
-            <div className="flex gap-3 mb-4">
-              <div className="inline-flex items-center gap-2 rounded-lg border border-info-light dark:border-info/30 bg-info-light dark:bg-info/10 px-3 py-1.5 text-sm font-medium text-info dark:text-info">
+          <div className="border-border-default dark:border-border-subtle bg-surface-primary mb-8 rounded-xl border p-8 shadow-sm dark:bg-slate-800">
+            <div className="mb-4 flex gap-3">
+              <div className="border-info-light dark:border-info/30 bg-info-light dark:bg-info/10 text-info dark:text-info inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-medium">
                 <span>Stage {trial.stage}</span>
               </div>
-              <div className="inline-flex items-center gap-2 rounded-lg border border-success-light dark:border-success/30 bg-success-light dark:bg-success-dark/20 px-3 py-1.5 text-sm font-medium text-success dark:text-success">
-                <CheckCircle2 className="w-4 h-4" />
+              <div className="border-success-light dark:border-success/30 bg-success-light dark:bg-success-dark/20 text-success dark:text-success inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-medium">
+                <CheckCircle2 className="h-4 w-4" />
                 Recruiting
               </div>
             </div>
@@ -402,36 +412,36 @@ export default function TrialDetailPage() {
             </p>
 
             {/* Key Details Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-border-default dark:border-border-subtle">
+            <div className="border-border-default dark:border-border-subtle grid grid-cols-2 gap-4 border-t pt-6 md:grid-cols-4">
               <div>
-                <div className="text-sm font-medium text-text-muted dark:text-text-muted mb-2">
+                <div className="text-text-muted dark:text-text-muted mb-2 text-sm font-medium">
                   🎯 Disease Focus
                 </div>
-                <div className="font-semibold text-text-primary dark:text-text-primary">
+                <div className="text-text-primary dark:text-text-primary font-semibold">
                   {trial.disease}
                 </div>
               </div>
               <div>
-                <div className="text-sm font-medium text-text-muted dark:text-text-muted mb-2">
+                <div className="text-text-muted dark:text-text-muted mb-2 text-sm font-medium">
                   🎂 Age Range
                 </div>
-                <div className="font-semibold text-text-primary dark:text-text-primary">
+                <div className="text-text-primary dark:text-text-primary font-semibold">
                   {trial.age_min}–{trial.age_max}
                 </div>
               </div>
               <div>
-                <div className="text-sm font-medium text-text-muted dark:text-text-muted mb-2">
+                <div className="text-text-muted dark:text-text-muted mb-2 text-sm font-medium">
                   👥 Patients Needed
                 </div>
-                <div className="font-semibold text-text-primary dark:text-text-primary">
+                <div className="text-text-primary dark:text-text-primary font-semibold">
                   {trial.patients_needed}
                 </div>
               </div>
               <div>
-                <div className="text-sm font-medium text-text-muted dark:text-text-muted mb-2">
+                <div className="text-text-muted dark:text-text-muted mb-2 text-sm font-medium">
                   ⚧ Gender
                 </div>
-                <div className="font-semibold text-text-primary dark:text-text-primary">
+                <div className="text-text-primary dark:text-text-primary font-semibold">
                   {trial.gender === "any" ? "Any" : trial.gender}
                 </div>
               </div>
@@ -439,11 +449,11 @@ export default function TrialDetailPage() {
           </div>
 
           {/* Criteria Cards */}
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <div className="mb-8 grid gap-6 md:grid-cols-2">
             {trial.inclusion_criteria && (
-              <div className="rounded-xl border border-border-default dark:border-border-subtle bg-surface-primary dark:bg-slate-800 p-6 shadow-sm">
-                <h3 className="font-semibold text-text-primary dark:text-text-primary mb-3 flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-success dark:text-success" />
+              <div className="border-border-default dark:border-border-subtle bg-surface-primary rounded-xl border p-6 shadow-sm dark:bg-slate-800">
+                <h3 className="text-text-primary dark:text-text-primary mb-3 flex items-center gap-2 font-semibold">
+                  <CheckCircle2 className="text-success dark:text-success h-5 w-5" />
                   Inclusion Criteria
                 </h3>
                 <p className="text-body text-text-secondary dark:text-text-secondary">
@@ -452,9 +462,9 @@ export default function TrialDetailPage() {
               </div>
             )}
             {trial.exclusion_criteria && (
-              <div className="rounded-xl border border-border-default dark:border-border-subtle bg-surface-primary dark:bg-slate-800 p-6 shadow-sm">
-                <h3 className="font-semibold text-text-primary dark:text-text-primary mb-3 flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5 text-warning dark:text-warning" />
+              <div className="border-border-default dark:border-border-subtle bg-surface-primary rounded-xl border p-6 shadow-sm dark:bg-slate-800">
+                <h3 className="text-text-primary dark:text-text-primary mb-3 flex items-center gap-2 font-semibold">
+                  <AlertCircle className="text-warning dark:text-warning h-5 w-5" />
                   Exclusion Criteria
                 </h3>
                 <p className="text-body text-text-secondary dark:text-text-secondary">
@@ -466,21 +476,21 @@ export default function TrialDetailPage() {
 
           {/* Consent Section */}
           {consentTemplate && (
-            <div className="rounded-xl border border-border-default dark:border-border-subtle bg-surface-primary dark:bg-slate-800 p-8 shadow-sm mb-8">
-              <div className="flex items-start justify-between mb-6">
+            <div className="border-border-default dark:border-border-subtle bg-surface-primary mb-8 rounded-xl border p-8 shadow-sm dark:bg-slate-800">
+              <div className="mb-6 flex items-start justify-between">
                 <div>
-                  <h2 className="text-h2 text-text-primary dark:text-text-primary flex items-center gap-2 mb-1">
-                    <FileText className="w-6 h-6" />
+                  <h2 className="text-h2 text-text-primary dark:text-text-primary mb-1 flex items-center gap-2">
+                    <FileText className="h-6 w-6" />
                     Informed Consent
                   </h2>
-                  <p className="text-sm text-text-secondary dark:text-text-secondary">
+                  <p className="text-text-secondary dark:text-text-secondary text-sm">
                     Please review and sign the consent form to proceed
                   </p>
                 </div>
                 {consentSubmission && (
-                  <div className="flex items-center gap-2 rounded-lg bg-success-light dark:bg-success-dark/20 border border-success-light dark:border-success/30 px-3 py-2">
-                    <CheckCircle2 className="w-5 h-5 text-success dark:text-success" />
-                    <span className="text-sm font-medium text-success dark:text-success">
+                  <div className="bg-success-light dark:bg-success-dark/20 border-success-light dark:border-success/30 flex items-center gap-2 rounded-lg border px-3 py-2">
+                    <CheckCircle2 className="text-success dark:text-success h-5 w-5" />
+                    <span className="text-success dark:text-success text-sm font-medium">
                       Signed
                     </span>
                   </div>
@@ -489,10 +499,10 @@ export default function TrialDetailPage() {
 
               {/* Consent Fields */}
               {!consentSubmission && (
-                <div className="space-y-4 mb-6">
+                <div className="mb-6 space-y-4">
                   {consentFields.map((field) => (
                     <div key={field}>
-                      <label className="block text-sm font-medium text-text-primary dark:text-text-primary mb-2">
+                      <label className="text-text-primary dark:text-text-primary mb-2 block text-sm font-medium">
                         {field.replace(/_/g, " ")}
                       </label>
                       <input
@@ -501,7 +511,7 @@ export default function TrialDetailPage() {
                         value={consentInputs[field] || ""}
                         onChange={handleConsentFieldChange}
                         placeholder={`Enter ${field}`}
-                        className="w-full px-4 py-3 rounded-lg border border-border-default dark:border-border-subtle bg-surface-secondary dark:bg-slate-700 text-text-primary dark:text-text-primary placeholder-text-muted dark:placeholder-text-muted focus:ring-2 focus:ring-secondary-600 focus:border-transparent transition-all"
+                        className="border-border-default dark:border-border-subtle bg-surface-secondary text-text-primary dark:text-text-primary placeholder-text-muted dark:placeholder-text-muted focus:ring-secondary-600 w-full rounded-lg border px-4 py-3 transition-all focus:border-transparent focus:ring-2 dark:bg-slate-700"
                       />
                     </div>
                   ))}
@@ -513,22 +523,25 @@ export default function TrialDetailPage() {
                 <button
                   type="button"
                   onClick={() => setShowConsentPreview(!showConsentPreview)}
-                  className="w-full flex items-center justify-between rounded-lg border border-border-default dark:border-border-subtle bg-surface-secondary dark:bg-slate-700 hover:bg-surface-secondary/80 dark:hover:bg-slate-700/80 p-4 text-left transition-colors"
+                  className="border-border-default dark:border-border-subtle bg-surface-secondary hover:bg-surface-secondary/80 flex w-full items-center justify-between rounded-lg border p-4 text-left transition-colors dark:bg-slate-700 dark:hover:bg-slate-700/80"
                 >
-                  <span className="font-medium text-text-primary dark:text-text-primary">
+                  <span className="text-text-primary dark:text-text-primary font-medium">
                     {showConsentPreview ? "Hide" : "Show"} Consent Preview
                   </span>
                   {showConsentPreview ? (
-                    <ChevronUp className="w-5 h-5" />
+                    <ChevronUp className="h-5 w-5" />
                   ) : (
-                    <ChevronDown className="w-5 h-5" />
+                    <ChevronDown className="h-5 w-5" />
                   )}
                 </button>
 
                 {showConsentPreview && (
-                  <div className="mt-4 rounded-lg bg-surface-secondary dark:bg-slate-700 p-6 border border-border-default dark:border-border-subtle max-h-64 overflow-y-auto">
-                    <div className="prose prose-sm dark:prose-invert max-w-none text-sm text-text-secondary dark:text-text-secondary whitespace-pre-wrap">
-                      {renderConsentText(consentTemplate.consent_template_text, consentInputs)}
+                  <div className="bg-surface-secondary border-border-default dark:border-border-subtle mt-4 max-h-64 overflow-y-auto rounded-lg border p-6 dark:bg-slate-700">
+                    <div className="prose prose-sm dark:prose-invert text-text-secondary dark:text-text-secondary max-w-none text-sm whitespace-pre-wrap">
+                      {renderConsentText(
+                        consentTemplate.consent_template_text,
+                        consentInputs
+                      )}
                     </div>
                   </div>
                 )}
@@ -545,13 +558,17 @@ export default function TrialDetailPage() {
                       onChange={(e) => setConsentAcknowledged(e.target.checked)}
                       className="mt-1"
                     />
-                    <label htmlFor="acknowledge" className="text-sm text-text-secondary dark:text-text-secondary">
-                      I have read and understood the consent form and agree to participate in this trial
+                    <label
+                      htmlFor="acknowledge"
+                      className="text-text-secondary dark:text-text-secondary text-sm"
+                    >
+                      I have read and understood the consent form and agree to
+                      participate in this trial
                     </label>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-text-primary dark:text-text-primary mb-2">
+                    <label className="text-text-primary dark:text-text-primary mb-2 block text-sm font-medium">
                       Type Your Full Name to Sign
                     </label>
                     <input
@@ -559,13 +576,15 @@ export default function TrialDetailPage() {
                       value={consentTypedName}
                       onChange={(e) => setConsentTypedName(e.target.value)}
                       placeholder="Your full name"
-                      className="w-full px-4 py-3 rounded-lg border border-border-default dark:border-border-subtle bg-surface-secondary dark:bg-slate-700 text-text-primary dark:text-text-primary placeholder-text-muted dark:placeholder-text-muted focus:ring-2 focus:ring-secondary-600 focus:border-transparent transition-all"
+                      className="border-border-default dark:border-border-subtle bg-surface-secondary text-text-primary dark:text-text-primary placeholder-text-muted dark:placeholder-text-muted focus:ring-secondary-600 w-full rounded-lg border px-4 py-3 transition-all focus:border-transparent focus:ring-2 dark:bg-slate-700"
                     />
                   </div>
 
                   {consentError && (
-                    <div className="rounded-lg bg-danger-light/10 dark:bg-danger/10 border border-danger-light dark:border-danger/30 p-4">
-                      <p className="text-sm text-danger dark:text-danger-light">{consentError}</p>
+                    <div className="bg-danger-light/10 dark:bg-danger/10 border-danger-light dark:border-danger/30 rounded-lg border p-4">
+                      <p className="text-danger dark:text-danger-light text-sm">
+                        {consentError}
+                      </p>
                     </div>
                   )}
 
@@ -573,15 +592,15 @@ export default function TrialDetailPage() {
                     type="button"
                     onClick={submitConsent}
                     disabled={consentSubmitting}
-                    className="w-full px-6 py-3 rounded-lg bg-secondary-600 hover:bg-secondary-700 dark:bg-secondary-600 dark:hover:bg-secondary-500 text-white font-semibold transition-colors disabled:opacity-50"
+                    className="bg-secondary-600 hover:bg-secondary-700 dark:bg-secondary-600 dark:hover:bg-secondary-500 w-full rounded-lg px-6 py-3 font-semibold text-white transition-colors disabled:opacity-50"
                   >
                     {consentSubmitting ? "Signing..." : "Sign Consent"}
                   </button>
                 </div>
               ) : (
-                <div className="rounded-lg bg-success-light/10 dark:bg-success/10 border border-success-light dark:border-success/30 p-4">
-                  <p className="text-sm text-success dark:text-success flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4" />
+                <div className="bg-success-light/10 dark:bg-success/10 border-success-light dark:border-success/30 rounded-lg border p-4">
+                  <p className="text-success dark:text-success flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="h-4 w-4" />
                     {consentMessage}
                   </p>
                 </div>
@@ -591,18 +610,20 @@ export default function TrialDetailPage() {
 
           {/* Medical History Form */}
           {formSchema && (
-            <div className="rounded-xl border border-border-default dark:border-border-subtle bg-surface-primary dark:bg-slate-800 p-8 shadow-sm">
+            <div className="border-border-default dark:border-border-subtle bg-surface-primary rounded-xl border p-8 shadow-sm dark:bg-slate-800">
               <h2 className="text-h2 text-text-primary dark:text-text-primary mb-6">
                 Medical History
               </h2>
 
               <form onSubmit={handleSubmitApplication} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid gap-6 md:grid-cols-2">
                   {formSchema.fields.map((field) => (
                     <div key={field.name}>
-                      <label className="block text-sm font-medium text-text-primary dark:text-text-primary mb-2">
+                      <label className="text-text-primary dark:text-text-primary mb-2 block text-sm font-medium">
                         {field.label}
-                        {field.required && <span className="text-danger">*</span>}
+                        {field.required && (
+                          <span className="text-danger">*</span>
+                        )}
                       </label>
 
                       {field.type === "textarea" ? (
@@ -612,7 +633,7 @@ export default function TrialDetailPage() {
                           onChange={handleFormChange}
                           required={field.required}
                           rows={4}
-                          className="w-full px-4 py-3 rounded-lg border border-border-default dark:border-border-subtle bg-surface-secondary dark:bg-slate-700 text-text-primary dark:text-text-primary placeholder-text-muted dark:placeholder-text-muted focus:ring-2 focus:ring-secondary-600 focus:border-transparent transition-all"
+                          className="border-border-default dark:border-border-subtle bg-surface-secondary text-text-primary dark:text-text-primary placeholder-text-muted dark:placeholder-text-muted focus:ring-secondary-600 w-full rounded-lg border px-4 py-3 transition-all focus:border-transparent focus:ring-2 dark:bg-slate-700"
                         />
                       ) : field.type === "select" && field.options ? (
                         <select
@@ -620,7 +641,7 @@ export default function TrialDetailPage() {
                           value={formData[field.name] || ""}
                           onChange={handleFormChange}
                           required={field.required}
-                          className="w-full px-4 py-3 rounded-lg border border-border-default dark:border-border-subtle bg-surface-secondary dark:bg-slate-700 text-text-primary dark:text-text-primary focus:ring-2 focus:ring-secondary-600 focus:border-transparent transition-all"
+                          className="border-border-default dark:border-border-subtle bg-surface-secondary text-text-primary dark:text-text-primary focus:ring-secondary-600 w-full rounded-lg border px-4 py-3 transition-all focus:border-transparent focus:ring-2 dark:bg-slate-700"
                         >
                           <option value="">Select {field.label}</option>
                           {field.options.map((opt) => (
@@ -636,7 +657,7 @@ export default function TrialDetailPage() {
                           value={formData[field.name] || ""}
                           onChange={handleFormChange}
                           required={field.required}
-                          className="w-full px-4 py-3 rounded-lg border border-border-default dark:border-border-subtle bg-surface-secondary dark:bg-slate-700 text-text-primary dark:text-text-primary placeholder-text-muted dark:placeholder-text-muted focus:ring-2 focus:ring-secondary-600 focus:border-transparent transition-all"
+                          className="border-border-default dark:border-border-subtle bg-surface-secondary text-text-primary dark:text-text-primary placeholder-text-muted dark:placeholder-text-muted focus:ring-secondary-600 w-full rounded-lg border px-4 py-3 transition-all focus:border-transparent focus:ring-2 dark:bg-slate-700"
                         />
                       )}
                     </div>
@@ -644,15 +665,17 @@ export default function TrialDetailPage() {
                 </div>
 
                 {error && (
-                  <div className="rounded-lg bg-danger-light/10 dark:bg-danger/10 border border-danger-light dark:border-danger/30 p-4">
-                    <p className="text-sm text-danger dark:text-danger-light">{error}</p>
+                  <div className="bg-danger-light/10 dark:bg-danger/10 border-danger-light dark:border-danger/30 rounded-lg border p-4">
+                    <p className="text-danger dark:text-danger-light text-sm">
+                      {error}
+                    </p>
                   </div>
                 )}
 
                 {success && (
-                  <div className="rounded-lg bg-success-light/10 dark:bg-success/10 border border-success-light dark:border-success/30 p-4">
-                    <p className="text-sm text-success dark:text-success flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4" />
+                  <div className="bg-success-light/10 dark:bg-success/10 border-success-light dark:border-success/30 rounded-lg border p-4">
+                    <p className="text-success dark:text-success flex items-center gap-2 text-sm">
+                      <CheckCircle2 className="h-4 w-4" />
                       {success}
                     </p>
                   </div>
@@ -661,7 +684,7 @@ export default function TrialDetailPage() {
                 <button
                   type="submit"
                   disabled={submitting || !consentSubmission}
-                  className="w-full px-6 py-3 rounded-lg bg-secondary-600 hover:bg-secondary-700 dark:bg-secondary-600 dark:hover:bg-secondary-500 text-white font-semibold transition-colors disabled:opacity-50"
+                  className="bg-secondary-600 hover:bg-secondary-700 dark:bg-secondary-600 dark:hover:bg-secondary-500 w-full rounded-lg px-6 py-3 font-semibold text-white transition-colors disabled:opacity-50"
                 >
                   {submitting ? "Submitting..." : "Submit Application"}
                 </button>
@@ -671,5 +694,5 @@ export default function TrialDetailPage() {
         </PageTransition>
       </main>
     </div>
-  );
+  )
 }

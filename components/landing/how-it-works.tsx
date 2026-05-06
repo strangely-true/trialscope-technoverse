@@ -34,15 +34,15 @@ export function HowItWorks() {
   return (
     <section
       ref={ref}
-      className="relative z-10 bg-[var(--background)] py-24 dark:bg-slate-900/50"
+      className="relative z-10 bg-[#FAFBFC] py-24"
     >
       <div className="mx-auto max-w-5xl px-6">
         {/* Heading */}
         <div className="mb-16 text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-[var(--text-primary)] sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             How TrialGo Works
           </h2>
-          <p className="mt-4 text-lg text-[var(--text-muted)]">
+          <p className="mt-4 text-lg text-slate-500">
             From registration to enrollment in three simple steps
           </p>
         </div>
@@ -53,7 +53,7 @@ export function HowItWorks() {
           <div className="absolute left-0 right-0 top-12 hidden h-0.5 md:block">
             <div
               className={cn(
-                "mx-auto h-full w-2/3 bg-gradient-to-r from-[var(--secondary-200)] via-[var(--secondary-400)] to-[var(--secondary-200)] transition-all duration-1000",
+                "mx-auto h-full w-2/3 bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200 transition-all duration-1000",
                 isVisible ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
               )}
             />
@@ -71,20 +71,20 @@ export function HowItWorks() {
               style={{ transitionDelay: `${i * 200}ms` }}
             >
               {/* Step number circle */}
-              <div className="relative z-10 mb-6 flex h-12 w-12 items-center justify-center rounded-full border-2 border-[var(--secondary-500)] bg-[var(--surface-primary)] text-lg font-bold text-[var(--secondary-600)] shadow-[var(--shadow-sm)] dark:bg-slate-800">
+              <div className="relative z-10 mb-6 flex h-12 w-12 items-center justify-center rounded-full border-2 border-blue-500 bg-white text-lg font-bold text-blue-600 shadow-sm transition-transform hover:scale-110">
                 {step.number}
               </div>
 
               {/* Icon */}
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--secondary-50)] dark:bg-[var(--secondary-100)]">
-                <step.icon className="h-8 w-8 text-[var(--secondary-600)]" />
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50">
+                <step.icon className="h-8 w-8 text-blue-600" />
               </div>
 
               {/* Content */}
-              <h3 className="text-xl font-semibold text-[var(--text-primary)]">
+              <h3 className="text-xl font-semibold text-slate-900">
                 {step.title}
               </h3>
-              <p className="mt-2 max-w-xs text-sm leading-relaxed text-[var(--text-muted)]">
+              <p className="mt-2 max-w-xs text-sm leading-relaxed text-slate-500">
                 {step.description}
               </p>
             </div>

@@ -226,129 +226,86 @@ export default function QuestionnairePage() {
   // ─── SEARCHING ANIMATION ─────────────────────────
   if (searching) {
     return (
-      <div className="hero-bg flex min-h-screen items-center justify-center">
-        <div className="glass-card mx-auto max-w-lg p-10 text-center">
-          <div
-            style={{
-              width: "80px", height: "80px", margin: "0 auto 1.5rem",
-              borderRadius: "50%",
-              background: "var(--gradient-primary)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: "2rem",
-              animation: "pulse 2s ease-in-out infinite",
-            }}
-          >
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-900">
+        <div className="mx-auto w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-xl dark:border-slate-800 dark:bg-slate-800/50">
+          <div className="mx-auto mb-6 flex h-20 w-20 animate-pulse items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-3xl shadow-lg shadow-blue-500/20">
             🌍
           </div>
-          <h2
-            style={{
-              fontFamily: "Space Grotesk", fontWeight: 700,
-              fontSize: "1.4rem", marginBottom: "1.5rem",
-            }}
-          >
+          <h2 className="mb-6 text-2xl font-bold text-slate-900 dark:text-white">
             Searching Global Databases
           </h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", textAlign: "left" }}>
+          <div className="flex flex-col gap-3 text-left">
             {SEARCHING_MESSAGES.slice(0, searchMsgIndex + 1).map((msg, i) => (
               <div
                 key={i}
-                style={{
-                  display: "flex", alignItems: "center", gap: "0.5rem",
-                  fontSize: "0.85rem",
-                  color: i === searchMsgIndex ? "var(--primary)" : "var(--foreground-subtle)",
-                  transition: "all 0.3s",
-                }}
+                className={`flex items-center gap-3 text-sm transition-all duration-300 ${
+                  i === searchMsgIndex ? "font-semibold text-blue-600 dark:text-blue-400" : "text-slate-400"
+                }`}
               >
                 <span>{i < searchMsgIndex ? "✅" : "🔄"}</span>
                 {msg}
               </div>
             ))}
           </div>
-          <p
-            style={{
-              color: "var(--foreground-muted)", fontSize: "0.8rem",
-              marginTop: "2rem",
-            }}
-          >
+          <p className="mt-8 text-xs text-slate-500 dark:text-slate-400">
             This usually takes about 30 seconds...
           </p>
         </div>
-        <style>{`@keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } }`}</style>
       </div>
     )
   }
 
   // ─── STEP RENDER ──────────────────────────────────
   return (
-    <div className="hero-bg min-h-screen">
-      <nav
-        style={{
-          background: "rgba(5,20,36,0.9)", backdropFilter: "blur(20px)",
-          borderBottom: "1px solid var(--glass-border)",
-          padding: "1rem 1.5rem",
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-        }}
-      >
-        <Link
-          href="/"
-          style={{
-            display: "flex", alignItems: "center", gap: "0.5rem",
-            fontFamily: "Space Grotesk", fontWeight: 700, fontSize: "1.1rem",
-          }}
-        >
-          🧬 Trial<span className="text-cyan">Go</span>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <nav className="sticky top-0 z-50 flex items-center justify-between border-b border-slate-200 bg-white/95 px-6 py-4 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95">
+        <Link href="/" className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-white">
+          🧬 Trial<span className="text-blue-600 dark:text-blue-400">Go</span>
         </Link>
-        <span style={{ color: "var(--foreground-subtle)", fontSize: "0.85rem" }}>
+        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
           Patient Onboarding
         </span>
       </nav>
 
       <div className="mx-auto max-w-2xl px-6 py-10">
         {/* Progress bar */}
-        <div style={{ marginBottom: "2rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem", fontSize: "0.8rem", color: "var(--foreground-subtle)" }}>
+        <div className="mb-8">
+          <div className="mb-2 flex justify-between text-xs font-semibold uppercase tracking-wider text-slate-400">
             <span>Step {Math.min(step, 7)} of 7</span>
             <span>{progress}%</span>
           </div>
-          <div style={{ height: "6px", background: "var(--surface-highest)", borderRadius: "3px", overflow: "hidden" }}>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
             <div
-              style={{
-                height: "100%", width: `${progress}%`,
-                background: "var(--gradient-primary)",
-                transition: "width 0.4s ease", borderRadius: "3px",
-              }}
+              className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-500 ease-out"
+              style={{ width: `${progress}%` }}
             />
           </div>
         </div>
 
-        <div className="glass-card p-8">
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-xl dark:border-slate-800 dark:bg-slate-800/50">
           {/* Step 1: Condition */}
           {step === 1 && (
             <div>
-              <h2 style={{ fontFamily: "Space Grotesk", fontWeight: 700, fontSize: "1.3rem", marginBottom: "0.5rem" }}>
+              <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
                 What is your primary health condition?
               </h2>
-              <p style={{ color: "var(--foreground-muted)", fontSize: "0.85rem", marginBottom: "1.5rem" }}>
+              <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
                 Tell us the disease or condition you are seeking a clinical trial for.
               </p>
               <input
-                className="input-dark"
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-blue-900/30"
                 placeholder="e.g. Blood Cancer, Diabetes, Lung Cancer..."
                 value={form.primary_condition}
                 onChange={(e) => handleConditionInput(e.target.value)}
                 autoFocus
               />
               {filteredConditions.length > 0 && (
-                <div style={{ marginTop: "0.5rem", display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+                <div className="mt-4 flex flex-wrap gap-2">
                   {filteredConditions.slice(0, 6).map((c) => (
                     <button
                       key={c}
                       onClick={() => { updateField("primary_condition", c); setFilteredConditions([]) }}
-                      style={{
-                        padding: "0.35rem 0.75rem", borderRadius: "20px", fontSize: "0.8rem",
-                        background: "rgba(0,200,150,0.1)", border: "1px solid var(--glass-border)",
-                        color: "var(--primary)", cursor: "pointer",
-                      }}
+                      className="rounded-full border border-blue-100 bg-blue-50 px-4 py-1.5 text-xs font-semibold text-blue-600 transition-colors hover:bg-blue-100 dark:border-blue-900/30 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/30"
                     >
                       {c}
                     </button>
@@ -361,24 +318,22 @@ export default function QuestionnairePage() {
           {/* Step 2: Stage */}
           {step === 2 && (
             <div>
-              <h2 style={{ fontFamily: "Space Grotesk", fontWeight: 700, fontSize: "1.3rem", marginBottom: "0.5rem" }}>
+              <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
                 What stage or severity is your condition?
               </h2>
-              <p style={{ color: "var(--foreground-muted)", fontSize: "0.85rem", marginBottom: "1.5rem" }}>
+              <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
                 This helps us find trials targeting your specific stage.
               </p>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem" }}>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {STAGES.map((s) => (
                   <button
                     key={s}
                     onClick={() => updateField("condition_stage", s)}
-                    style={{
-                      padding: "0.75rem", borderRadius: "var(--radius)",
-                      background: form.condition_stage === s ? "var(--primary)" : "rgba(255,255,255,0.04)",
-                      border: `1px solid ${form.condition_stage === s ? "var(--primary)" : "var(--glass-border)"}`,
-                      color: form.condition_stage === s ? "#000" : "var(--foreground)",
-                      cursor: "pointer", fontSize: "0.85rem", transition: "all 0.2s",
-                    }}
+                    className={`rounded-xl border p-4 text-sm font-semibold transition-all duration-200 ${
+                      form.condition_stage === s
+                        ? "border-blue-600 bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                        : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800"
+                    }`}
                   >
                     {s}
                   </button>
@@ -390,24 +345,22 @@ export default function QuestionnairePage() {
           {/* Step 3: Duration */}
           {step === 3 && (
             <div>
-              <h2 style={{ fontFamily: "Space Grotesk", fontWeight: 700, fontSize: "1.3rem", marginBottom: "0.5rem" }}>
+              <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
                 How long have you had this condition?
               </h2>
-              <p style={{ color: "var(--foreground-muted)", fontSize: "0.85rem", marginBottom: "1.5rem" }}>
+              <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
                 Duration helps match you with the right trial phase.
               </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <div className="flex flex-col gap-3">
                 {DURATIONS.map((d) => (
-                  <button
+                   <button
                     key={d}
                     onClick={() => updateField("condition_duration", d)}
-                    style={{
-                      padding: "0.85rem 1rem", borderRadius: "var(--radius)", textAlign: "left",
-                      background: form.condition_duration === d ? "var(--primary)" : "rgba(255,255,255,0.04)",
-                      border: `1px solid ${form.condition_duration === d ? "var(--primary)" : "var(--glass-border)"}`,
-                      color: form.condition_duration === d ? "#000" : "var(--foreground)",
-                      cursor: "pointer", fontSize: "0.9rem", transition: "all 0.2s",
-                    }}
+                    className={`rounded-xl border p-4 text-left text-sm font-semibold transition-all duration-200 ${
+                      form.condition_duration === d
+                        ? "border-blue-600 bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                        : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800"
+                    }`}
                   >
                     {d}
                   </button>
@@ -419,19 +372,18 @@ export default function QuestionnairePage() {
           {/* Step 4: Prior treatments */}
           {step === 4 && (
             <div>
-              <h2 style={{ fontFamily: "Space Grotesk", fontWeight: 700, fontSize: "1.3rem", marginBottom: "0.5rem" }}>
+              <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
                 What treatments have you already tried?
               </h2>
-              <p style={{ color: "var(--foreground-muted)", fontSize: "0.85rem", marginBottom: "1.5rem" }}>
+              <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
                 This helps exclude trials you may not be eligible for.
               </p>
               <textarea
-                className="input-dark"
+                className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-blue-900/30"
                 placeholder="e.g. chemotherapy, radiation, medication name, or type None"
                 value={form.prior_treatments}
                 onChange={(e) => updateField("prior_treatments", e.target.value)}
-                rows={3}
-                style={{ resize: "vertical" }}
+                rows={4}
               />
             </div>
           )}
@@ -439,19 +391,18 @@ export default function QuestionnairePage() {
           {/* Step 5: Current medications */}
           {step === 5 && (
             <div>
-              <h2 style={{ fontFamily: "Space Grotesk", fontWeight: 700, fontSize: "1.3rem", marginBottom: "0.5rem" }}>
+              <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
                 Are you currently taking any medications?
               </h2>
-              <p style={{ color: "var(--foreground-muted)", fontSize: "0.85rem", marginBottom: "1.5rem" }}>
+              <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
                 Some trials may require specific medication history.
               </p>
               <textarea
-                className="input-dark"
+                className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-blue-900/30"
                 placeholder="e.g. metformin, ibuprofen, or type None"
                 value={form.current_medications}
                 onChange={(e) => updateField("current_medications", e.target.value)}
-                rows={3}
-                style={{ resize: "vertical" }}
+                rows={4}
               />
             </div>
           )}
@@ -459,17 +410,16 @@ export default function QuestionnairePage() {
           {/* Step 6: Country */}
           {step === 6 && (
             <div>
-              <h2 style={{ fontFamily: "Space Grotesk", fontWeight: 700, fontSize: "1.3rem", marginBottom: "0.5rem" }}>
+              <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
                 Where are you located?
               </h2>
-              <p style={{ color: "var(--foreground-muted)", fontSize: "0.85rem", marginBottom: "1.5rem" }}>
-                We'll prioritise trials near your location.
+              <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
+                We&apos;ll prioritise trials near your location.
               </p>
               <select
-                className="input-dark"
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-blue-900/30"
                 value={form.country}
                 onChange={(e) => updateField("country", e.target.value)}
-                style={{ width: "100%" }}
               >
                 <option value="">Select your country</option>
                 {COUNTRIES.map((c) => (
@@ -482,17 +432,17 @@ export default function QuestionnairePage() {
           {/* Step 7: Age, Gender, Notes */}
           {step === 7 && (
             <div>
-              <h2 style={{ fontFamily: "Space Grotesk", fontWeight: 700, fontSize: "1.3rem", marginBottom: "0.5rem" }}>
+              <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
                 Tell us a bit about yourself
               </h2>
-              <p style={{ color: "var(--foreground-muted)", fontSize: "0.85rem", marginBottom: "1.5rem" }}>
+              <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
                 Almost done! This helps refine your matches.
               </p>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+              <div className="mb-6 grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", color: "var(--foreground-muted)" }}>Age</label>
+                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400">Age</label>
                   <input
-                    className="input-dark"
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-blue-900/30"
                     type="number"
                     placeholder="e.g. 34"
                     value={form.age}
@@ -502,12 +452,11 @@ export default function QuestionnairePage() {
                   />
                 </div>
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", color: "var(--foreground-muted)" }}>Gender</label>
+                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400">Gender</label>
                   <select
-                    className="input-dark"
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-blue-900/30"
                     value={form.gender}
                     onChange={(e) => updateField("gender", e.target.value)}
-                    style={{ width: "100%" }}
                   >
                     <option value="">Select</option>
                     {GENDERS.map((g) => (
@@ -516,15 +465,14 @@ export default function QuestionnairePage() {
                   </select>
                 </div>
               </div>
-              <div>
-                <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", color: "var(--foreground-muted)" }}>Additional Notes (optional)</label>
+              <div className="mt-4">
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400">Additional Notes (optional)</label>
                 <textarea
-                  className="input-dark"
+                  className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-blue-900/30"
                   placeholder="Anything else you'd like us to know..."
                   value={form.additional_notes}
                   onChange={(e) => updateField("additional_notes", e.target.value)}
-                  rows={2}
-                  style={{ resize: "vertical" }}
+                  rows={3}
                 />
               </div>
             </div>
@@ -533,41 +481,40 @@ export default function QuestionnairePage() {
           {/* Step 8: Summary */}
           {step === 8 && (
             <div>
-              <h2 style={{ fontFamily: "Space Grotesk", fontWeight: 700, fontSize: "1.3rem", marginBottom: "0.5rem" }}>
+              <h2 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
                 Ready to find your trials
               </h2>
-              <p style={{ color: "var(--foreground-muted)", fontSize: "0.85rem", marginBottom: "1.5rem" }}>
+              <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
                 We will search over 20 global clinical trial databases to find the best match for your condition. This takes about 30 seconds.
               </p>
 
-              <div style={{ background: "rgba(0,200,150,0.06)", border: "1px solid rgba(0,200,150,0.15)", borderRadius: "var(--radius)", padding: "1rem", marginBottom: "1.5rem" }}>
-                <div style={{ fontSize: "0.75rem", color: "var(--foreground-subtle)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.4rem" }}>
+              <div className="mb-6 rounded-xl border border-blue-100 bg-blue-50/50 p-4 dark:border-blue-900/30 dark:bg-blue-900/10">
+                <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-blue-500 dark:text-blue-400">
                   Search Query Preview
                 </div>
-                <div style={{ fontFamily: "Space Grotesk", fontWeight: 600, color: "var(--primary)" }}>
+                <div className="text-lg font-bold text-blue-700 dark:text-blue-300">
                   &quot;{searchQuery}&quot;
                 </div>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", fontSize: "0.8rem", color: "var(--foreground-muted)", marginBottom: "1.5rem" }}>
-                <div>🏥 <strong>Condition:</strong> {form.primary_condition}</div>
-                <div>📊 <strong>Stage:</strong> {form.condition_stage || "N/A"}</div>
-                <div>🌍 <strong>Country:</strong> {form.country}</div>
-                <div>🎂 <strong>Age:</strong> {form.age}</div>
-                <div>⚧ <strong>Gender:</strong> {form.gender}</div>
-                <div>⏱ <strong>Duration:</strong> {form.condition_duration || "N/A"}</div>
+              <div className="mb-8 grid grid-cols-2 gap-4 rounded-xl border border-slate-100 bg-slate-50/50 p-4 text-sm text-slate-600 dark:border-slate-700/50 dark:bg-slate-900/30 dark:text-slate-400">
+                <div><span className="mr-2">🏥</span><strong className="text-slate-900 dark:text-white">Condition:</strong> {form.primary_condition}</div>
+                <div><span className="mr-2">📊</span><strong className="text-slate-900 dark:text-white">Stage:</strong> {form.condition_stage || "N/A"}</div>
+                <div><span className="mr-2">🌍</span><strong className="text-slate-900 dark:text-white">Country:</strong> {form.country}</div>
+                <div><span className="mr-2">🎂</span><strong className="text-slate-900 dark:text-white">Age:</strong> {form.age}</div>
+                <div><span className="mr-2">⚧</span><strong className="text-slate-900 dark:text-white">Gender:</strong> {form.gender}</div>
+                <div><span className="mr-2">⏱</span><strong className="text-slate-900 dark:text-white">Duration:</strong> {form.condition_duration || "N/A"}</div>
               </div>
 
               {error && (
-                <p style={{ color: "var(--red-alert)", fontSize: "0.85rem", marginBottom: "1rem" }}>
+                <p className="mb-4 text-sm font-medium text-red-500">
                   {error}
                 </p>
               )}
 
               <button
                 onClick={handleSubmit}
-                className="btn-primary"
-                style={{ width: "100%", justifyContent: "center", padding: "1rem", fontSize: "1.05rem" }}
+                className="flex w-full items-center justify-center rounded-xl bg-blue-600 py-4 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 hover:shadow-blue-600/30 active:scale-[0.98]"
               >
                 🔍 FIND MY TRIALS
               </button>
@@ -576,20 +523,26 @@ export default function QuestionnairePage() {
 
           {/* Navigation buttons */}
           {step <= 7 && (
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "2rem" }}>
+            <div className="mt-10 flex justify-between">
               <button
                 onClick={() => setStep((s) => Math.max(1, s - 1))}
                 disabled={step === 1}
-                className="btn-ghost"
-                style={{ padding: "0.6rem 1.25rem", opacity: step === 1 ? 0.3 : 1 }}
+                className={`rounded-lg border border-slate-200 px-6 py-2.5 text-sm font-semibold transition-all ${
+                  step === 1
+                    ? "cursor-not-allowed opacity-30 text-slate-400"
+                    : "text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800"
+                }`}
               >
                 ← Back
               </button>
               <button
                 onClick={() => setStep((s) => Math.min(totalSteps, s + 1))}
                 disabled={!canProceed()}
-                className="btn-primary"
-                style={{ padding: "0.6rem 1.5rem", opacity: canProceed() ? 1 : 0.4 }}
+                className={`rounded-lg px-8 py-2.5 text-sm font-bold text-white transition-all ${
+                  canProceed()
+                    ? "bg-blue-600 shadow-md shadow-blue-600/20 hover:bg-blue-700 hover:shadow-lg active:scale-95"
+                    : "cursor-not-allowed bg-slate-300 dark:bg-slate-700"
+                }`}
               >
                 {step === 7 ? "Review →" : "Next →"}
               </button>

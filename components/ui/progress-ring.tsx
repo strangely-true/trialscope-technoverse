@@ -39,7 +39,7 @@ export function ProgressRing({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="var(--border-default)"
+          className="stroke-slate-200 dark:stroke-slate-700"
           strokeWidth={strokeWidth}
         />
         {/* Progress circle */}

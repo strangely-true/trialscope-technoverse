@@ -1,72 +1,109 @@
 "use client";
 
-import { Bell, LogOut } from "lucide-react";
-import { ModeToggle } from "@/components/mode-toggle";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { LogOut, Menu, Bell, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import type { UserRole } from "@/types/user";
 
 interface AppHeaderProps {
-  title: string;
+  role: UserRole;
   userName?: string;
-  greeting?: boolean;
-  notificationCount?: number;
-  onLogout?: () => void;
-  className?: string;
+  onMenuClick?: () => void;
 }
 
-export function AppHeader({
-  title,
-  userName,
-  greeting = true,
-  notificationCount = 0,
-  onLogout,
-  className,
-}: AppHeaderProps) {
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-    return "Good evening";
+const ROLE_LABELS: Record<UserRole, string> = {
+  patient: "Patient",
+  coordinator: "Coordinator",
+  pharma: "Pharma",
+};
+
+const LOGOUT_ROUTES: Record<UserRole, string> = {
+  patient: "/login",
+  coordinator: "/coordinator/login",
+  pharma: "/pharma/login",
+};
+
+export function AppHeader({ role, userName = "User", onMenuClick }: AppHeaderProps) {
+  const router = useRouter();
+  const { theme, setTheme } = useTheme();
+
+  const handleLogout = () => {
+    localStorage.removeItem("trialgo_token");
+    localStorage.removeItem("trialgo_role");
+    localStorage.removeItem("trialgo_user_id");
+    localStorage.removeItem("trialgo_user");
+    router.replace(LOGOUT_ROUTES[role]);
   };
 
   return (
     <header
-      className={cn(
-        "sticky top-0 z-20 flex h-16 items-center justify-between border-b border-[var(--border-default)] bg-[var(--surface-primary)]/80 px-6 backdrop-blur-sm dark:bg-slate-900/80",
-        className
-      )}
+      className="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-slate-200 bg-white/80 px-4 backdrop-blur-xl dark:border-slate-700 dark:bg-slate-900/80"
     >
-      <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
-        {title}
-      </h1>
+      {/* Mobile hamburger */}
+      <button
+        onClick={onMenuClick}
+        className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white lg:hidden"
+        aria-label="Toggle sidebar"
+      >
+        <Menu className="h-5 w-5" />
+      </button>
 
-      <div className="flex items-center gap-4">
-        {greeting && userName && (
-          <span className="hidden text-sm text-[var(--text-muted)] sm:block">
-            {getGreeting()}, {userName}
+      {/* Breadcrumb / title */}
+      <div className="flex flex-1 items-center gap-2">
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors dark:text-slate-400 dark:hover:text-white"
+        >
+          <span className="text-base">🧬</span>
+          <span className="hidden text-sm font-semibold md:block text-slate-900 dark:text-white">
+            Trial<span className="text-blue-600 dark:text-blue-400">Go</span>
           </span>
-        )}
+        </Link>
+        <span className="text-slate-400">/</span>
+        <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+          {ROLE_LABELS[role]}
+        </span>
+      </div>
 
-        {/* Notification bell */}
-        <button className="relative rounded-lg p-2 text-[var(--text-muted)] transition-colors hover:bg-slate-50 hover:text-[var(--text-primary)] dark:hover:bg-slate-800">
-          <Bell className="h-5 w-5" />
-          {notificationCount > 0 && (
-            <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--danger)] text-[10px] font-bold text-white">
-              {notificationCount > 9 ? "9+" : notificationCount}
-            </span>
-          )}
+      {/* Right actions */}
+      <div className="flex items-center gap-2">
+        {/* Notifications placeholder */}
+        <button
+          className="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+          aria-label="Notifications"
+        >
+          <Bell className="h-4 w-4" />
         </button>
 
-        <ModeToggle />
+        {/* Theme toggle */}
+        <button
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-slate-100 hover:text-[var(--text-primary)] dark:hover:bg-slate-800"
+          aria-label="Toggle theme"
+        >
+          {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </button>
 
-        {onLogout && (
-          <button
-            onClick={onLogout}
-            className="rounded-lg p-2 text-[var(--text-muted)] transition-colors hover:bg-red-50 hover:text-[var(--danger)] dark:hover:bg-red-900/20"
-            title="Logout"
-          >
-            <LogOut className="h-5 w-5" />
-          </button>
-        )}
+        {/* User pill */}
+        <div className="hidden items-center gap-2 rounded-lg border border-slate-200 px-3 py-1.5 md:flex dark:border-slate-700">
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-50 text-xs font-bold text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+            {userName.charAt(0).toUpperCase()}
+          </div>
+          <span className="max-w-[120px] truncate text-sm font-medium text-slate-900 dark:text-white">
+            {userName}
+          </span>
+        </div>
+
+        {/* Logout */}
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+          aria-label="Sign out"
+        >
+          <LogOut className="h-4 w-4" />
+          <span className="hidden md:block">Sign Out</span>
+        </button>
       </div>
     </header>
   );

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { TrialGoLoader } from "@/components/ui/trialgo-loader"
 
 interface Trial {
   id: number
@@ -213,44 +214,22 @@ export default function TrialsPage() {
   }
 
   return (
-    <div className="hero-bg min-h-screen">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       {/* Nav */}
-      <nav
-        style={{
-          background: "rgba(5,20,36,0.9)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "1px solid var(--glass-border)",
-          padding: "1rem 1.5rem",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Link
-          href="/"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            fontFamily: "Space Grotesk",
-            fontWeight: 700,
-            fontSize: "1.1rem",
-          }}
-        >
-          🧬 Trial<span className="text-cyan">Go</span>
+      <nav className="flex items-center justify-between border-b border-slate-200 bg-white/95 px-6 py-4 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95">
+        <Link href="/" className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-white">
+          🧬 Trial<span className="text-blue-600 dark:text-blue-400">Go</span>
         </Link>
         <div className="flex items-center gap-4">
           <Link
             href="/onboarding/questionnaire"
-            className="btn-ghost"
-            style={{ padding: "0.45rem 1rem", fontSize: "0.82rem" }}
+            className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-900 transition-colors hover:border-blue-600 hover:text-blue-600 dark:border-slate-700 dark:text-white dark:hover:border-blue-400 dark:hover:text-blue-400"
           >
             ✏️ Edit Search
           </Link>
           <Link
             href="/dashboard"
-            className="btn-ghost"
-            style={{ padding: "0.45rem 1.25rem", fontSize: "0.85rem" }}
+            className="rounded-full border border-slate-200 px-5 py-2 text-sm font-semibold text-slate-900 transition-colors hover:border-blue-600 hover:text-blue-600 dark:border-slate-700 dark:text-white dark:hover:border-blue-400 dark:hover:text-blue-400"
           >
             My Dashboard
           </Link>
@@ -259,13 +238,7 @@ export default function TrialsPage() {
               localStorage.clear()
               router.push("/login")
             }}
-            style={{
-              color: "var(--foreground-subtle)",
-              fontSize: "0.85rem",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-            }}
+            className="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
           >
             Logout
           </button>
@@ -276,99 +249,47 @@ export default function TrialsPage() {
         {/* Header */}
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div>
-            <h1
-              style={{
-                fontFamily: "Space Grotesk",
-                fontSize: "2rem",
-                fontWeight: 700,
-              }}
-            >
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
               Your Trial Matches
             </h1>
             {searchQuery && (
-              <p
-                style={{
-                  color: "var(--foreground-muted)",
-                  marginTop: "0.25rem",
-                  fontSize: "0.85rem",
-                }}
-              >
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Searching for:{" "}
-                <span style={{ color: "var(--primary)" }}>
+                <span className="font-semibold text-blue-600 dark:text-blue-400">
                   &quot;{searchQuery}&quot;
                 </span>
               </p>
             )}
           </div>
           <input
-            className="input-dark"
+            className="w-full max-w-[320px] rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
             placeholder="Filter by disease or trial name..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{ maxWidth: "320px" }}
           />
         </div>
 
         {/* ━━━━ SECTION 1: INTERNAL TRIALGO TRIALS ━━━━ */}
-        <section style={{ marginBottom: "3rem" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.75rem",
-              marginBottom: "1.25rem",
-            }}
-          >
-            <h2
-              style={{
-                fontFamily: "Space Grotesk",
-                fontSize: "1.3rem",
-                fontWeight: 700,
-              }}
-            >
+        <section className="mb-12">
+          <div className="mb-5 flex items-center gap-3">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
               Trials Available on TrialGo
             </h2>
-            <span
-              style={{
-                padding: "0.2rem 0.6rem",
-                borderRadius: "4px",
-                fontSize: "0.65rem",
-                fontWeight: 700,
-                background: "rgba(0,149,255,0.15)",
-                color: "#0095ff",
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-              }}
-            >
+            <span className="rounded bg-blue-100 px-2 py-1 text-xs font-bold uppercase tracking-wide text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
               MANAGED
             </span>
           </div>
-          <p
-            style={{
-              color: "var(--foreground-muted)",
-              fontSize: "0.85rem",
-              marginBottom: "1.5rem",
-            }}
-          >
+          <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
             Full managed trial experience — AI-powered consent, monitoring, and
             support. Apply directly.
           </p>
 
           {loadingTrials ? (
-            <div
-              className="py-10 text-center"
-              style={{ color: "var(--foreground-muted)" }}
-            >
-              <div style={{ fontSize: "1.5rem", marginBottom: "0.75rem" }}>
-                🔄
-              </div>
-              Loading trials...
+            <div className="py-20 flex justify-center">
+              <TrialGoLoader size="md" label="Loading trials" />
             </div>
           ) : filteredTrials.length === 0 ? (
-            <div
-              className="glass-card py-10 text-center"
-              style={{ color: "var(--foreground-muted)" }}
-            >
+            <div className="rounded-xl border border-slate-200 bg-white py-10 text-center text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
               <div style={{ fontSize: "1.5rem", marginBottom: "0.75rem" }}>
                 📋
               </div>
@@ -381,56 +302,26 @@ export default function TrialsPage() {
               {filteredTrials.map((trial) => (
                 <div
                   key={trial.id}
-                  className="glass flex flex-col gap-4 p-6"
-                  style={{ borderLeft: "3px solid #0095ff" }}
+                  className="flex flex-col gap-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-500 bg-white p-6 shadow-sm dark:border-slate-700 dark:border-l-blue-500 dark:bg-slate-800"
                 >
                   <div>
                     <div className="mb-3 flex flex-wrap items-center gap-2">
-                      <span
-                        style={{
-                          padding: "0.15rem 0.5rem",
-                          borderRadius: "4px",
-                          fontSize: "0.65rem",
-                          fontWeight: 700,
-                          background: "rgba(0,149,255,0.15)",
-                          color: "#0095ff",
-                        }}
-                      >
+                      <span className="rounded bg-blue-100 px-2 py-0.5 text-[0.65rem] font-bold text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
                         TRIALGO MANAGED
                       </span>
-                      <span className="badge-cyan">
+                      <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
                         Stage {trial.stage || "N/A"}
                       </span>
-                      <span className="badge-green">Recruiting</span>
+                      <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">Recruiting</span>
                     </div>
-                    <h3
-                      style={{
-                        fontFamily: "Space Grotesk",
-                        fontWeight: 600,
-                        fontSize: "1.05rem",
-                        marginBottom: "0.5rem",
-                        lineHeight: 1.4,
-                      }}
-                    >
+                    <h3 className="mb-2 text-lg font-semibold leading-relaxed text-slate-900 dark:text-white">
                       {trial.title}
                     </h3>
-                    <p
-                      style={{
-                        color: "var(--foreground-muted)",
-                        fontSize: "0.85rem",
-                        lineHeight: 1.6,
-                      }}
-                    >
+                    <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                       {trial.description?.substring(0, 120)}...
                     </p>
                   </div>
-                  <div
-                    className="grid grid-cols-2 gap-2"
-                    style={{
-                      fontSize: "0.8rem",
-                      color: "var(--foreground-subtle)",
-                    }}
-                  >
+                  <div className="grid grid-cols-2 gap-2 text-xs text-slate-500 dark:text-slate-400">
                     <span>🦠 {trial.disease}</span>
                     <span>👥 {trial.patients_needed} needed</span>
                     <span>
@@ -440,12 +331,7 @@ export default function TrialsPage() {
                   </div>
                   <Link
                     href={`/trials/${trial.id}`}
-                    className="btn-primary mt-auto"
-                    style={{
-                      justifyContent: "center",
-                      fontSize: "0.875rem",
-                      padding: "0.6rem 1.25rem",
-                    }}
+                    className="mt-auto flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-700 hover:shadow-md hover:shadow-blue-600/20"
                   >
                     APPLY NOW →
                   </Link>
@@ -456,99 +342,43 @@ export default function TrialsPage() {
         </section>
 
         {/* ━━━━ DIVIDER ━━━━ */}
-        <div
-          style={{
-            height: "1px",
-            background:
-              "linear-gradient(to right, transparent, var(--glass-border), transparent)",
-            margin: "2rem 0 2.5rem",
-          }}
-        />
+        <div className="my-10 h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent dark:via-slate-700" />
 
         {/* ━━━━ SECTION 2: GLOBAL DATABASE MATCHES ━━━━ */}
         <section>
-          <div
-            style={{
-              marginBottom: "1.25rem",
-            }}
-          >
-            <h2
-              style={{
-                fontFamily: "Space Grotesk",
-                fontSize: "1.3rem",
-                fontWeight: 700,
-              }}
-            >
+          <div className="mb-5">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
               🌍 Globally Found Databases
             </h2>
           </div>
-          <p
-            style={{
-              color: "var(--foreground-muted)",
-              fontSize: "0.85rem",
-              marginBottom: "1.5rem",
-            }}
-          >
+          <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
             All expected trial databases are listed below. Matched trials are
             shown directly under each database.
           </p>
 
           {!hasQuestionnaire ? (
-            <div className="glass-card py-12 text-center">
+            <div className="rounded-xl border border-slate-200 bg-white py-12 text-center dark:border-slate-700 dark:bg-slate-800">
               <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>📝</div>
-              <h3
-                style={{
-                  fontFamily: "Space Grotesk",
-                  fontWeight: 600,
-                  fontSize: "1.1rem",
-                  marginBottom: "0.5rem",
-                }}
-              >
+              <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
                 Complete your profile to discover global trials
               </h3>
-              <p
-                style={{
-                  color: "var(--foreground-muted)",
-                  fontSize: "0.85rem",
-                  marginBottom: "1.5rem",
-                }}
-              >
+              <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
                 Answer a short questionnaire and we&apos;ll search 20+ databases
                 worldwide.
               </p>
               <Link
                 href="/onboarding/questionnaire"
-                className="btn-primary"
-                style={{ display: "inline-flex" }}
+                className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/20"
               >
                 Start Questionnaire →
               </Link>
             </div>
           ) : stillSearching || loadingExternal ? (
-            <div
-              className="glass-card py-12 text-center"
-              style={{ color: "var(--foreground-muted)" }}
-            >
-              <div
-                style={{
-                  fontSize: "2rem",
-                  marginBottom: "1rem",
-                  animation: "pulse 2s ease-in-out infinite",
-                }}
-              >
-                🔍
-              </div>
-              Still searching global databases...
-              <p style={{ fontSize: "0.8rem", marginTop: "0.5rem" }}>
-                Results will appear automatically when ready.
-              </p>
-              <style>{`@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }`}</style>
+            <div className="rounded-xl border border-slate-200 bg-white py-12 flex justify-center dark:border-slate-700 dark:bg-slate-800">
+              <TrialGoLoader size="md" label="Searching global databases" />
             </div>
           ) : databaseSummary.length === 0 ? (
-            <div
-              className="glass-card py-12 text-center"
-              style={{ color: "var(--foreground-muted)" }}
-            >
+            <div className="rounded-xl border border-slate-200 bg-white py-12 text-center text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
               <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>🌐</div>
               Database summary not available yet.
               <p style={{ fontSize: "0.8rem", marginTop: "0.5rem" }}>
@@ -556,8 +386,7 @@ export default function TrialsPage() {
               </p>
               <Link
                 href="/onboarding/questionnaire"
-                className="btn-ghost"
-                style={{ marginTop: "1rem", display: "inline-flex" }}
+                className="mt-4 inline-flex items-center justify-center rounded-full border border-slate-200 px-6 py-2.5 text-sm font-semibold text-slate-900 transition-colors hover:border-blue-600 hover:text-blue-600 dark:border-slate-700 dark:text-white dark:hover:border-blue-400 dark:hover:text-blue-400"
               >
                 Edit Search →
               </Link>
@@ -567,92 +396,35 @@ export default function TrialsPage() {
               {externalMatches.map((m) => (
                 <div
                   key={m.id}
-                  className="flex flex-col gap-3 p-5"
-                  style={{
-                    background: "rgba(255,255,255,0.025)",
-                    border: "1px solid var(--glass-border)",
-                    borderRadius: "var(--radius)",
-                  }}
+                  className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800"
                 >
                   <div className="flex flex-wrap items-center gap-2">
-                    <span
-                      style={{
-                        padding: "0.15rem 0.5rem",
-                        borderRadius: "4px",
-                        fontSize: "0.62rem",
-                        fontWeight: 700,
-                        background: "rgba(255,255,255,0.07)",
-                        color: "var(--foreground-subtle)",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.04em",
-                      }}
-                    >
+                    <span className="rounded bg-slate-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-slate-600 dark:bg-slate-700/50 dark:text-slate-400">
                       {m.source_database}
                     </span>
                   </div>
-                  <h3
-                    style={{
-                      fontFamily: "Space Grotesk",
-                      fontWeight: 600,
-                      fontSize: "0.95rem",
-                      lineHeight: 1.4,
-                    }}
-                  >
+                  <h3 className="text-[0.95rem] font-semibold leading-relaxed text-slate-900 dark:text-white">
                     {m.trial_name.substring(0, 100)}
                     {m.trial_name.length > 100 ? "..." : ""}
                   </h3>
-                  <div
-                    style={{
-                      fontSize: "0.78rem",
-                      color: "var(--foreground-subtle)",
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: "0.3rem",
-                    }}
-                  >
+                  <div className="grid grid-cols-2 gap-1.5 text-[0.78rem] text-slate-500 dark:text-slate-400">
                     <span>🦠 {m.condition}</span>
                     <span>📍 {m.location || "Global"}</span>
                     <span>🔬 {m.phase}</span>
                     <span>📋 {m.status}</span>
                   </div>
                   {m.match_reason && (
-                    <div
-                      style={{
-                        padding: "0.4rem 0.6rem",
-                        borderRadius: "6px",
-                        background: "rgba(34,197,94,0.08)",
-                        border: "1px solid rgba(34,197,94,0.2)",
-                        fontSize: "0.75rem",
-                        color: "var(--green-alert)",
-                        lineHeight: 1.4,
-                      }}
-                    >
+                    <div className="rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs leading-relaxed text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400">
                       ✅ {m.match_reason}
                     </div>
                   )}
                   {m.concerns && (
-                    <div
-                      style={{
-                        padding: "0.4rem 0.6rem",
-                        borderRadius: "6px",
-                        background: "rgba(245,158,11,0.08)",
-                        border: "1px solid rgba(245,158,11,0.2)",
-                        fontSize: "0.75rem",
-                        color: "var(--amber-alert)",
-                        lineHeight: 1.4,
-                      }}
-                    >
+                    <div className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs leading-relaxed text-amber-700 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-400">
                       ⚠️ Note: {m.concerns}
                     </div>
                   )}
                   {m.eligibility_summary && (
-                    <p
-                      style={{
-                        fontSize: "0.78rem",
-                        color: "var(--foreground-muted)",
-                        lineHeight: 1.5,
-                      }}
-                    >
+                    <p className="text-[0.78rem] leading-relaxed text-slate-500 dark:text-slate-400">
                       {m.eligibility_summary.substring(0, 150)}
                       {m.eligibility_summary.length > 150 ? "..." : ""}
                     </p>
@@ -661,23 +433,11 @@ export default function TrialsPage() {
                     href={m.external_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-ghost mt-auto"
-                    style={{
-                      justifyContent: "center",
-                      fontSize: "0.82rem",
-                      padding: "0.5rem 1rem",
-                    }}
+                    className="mt-auto flex items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-[0.82rem] font-semibold text-slate-900 transition-colors hover:border-blue-600 hover:text-blue-600 dark:border-slate-700 dark:text-white dark:hover:border-blue-400 dark:hover:text-blue-400"
                   >
                     VISIT TRIAL WEBSITE ↗
                   </a>
-                  <p
-                    style={{
-                      fontSize: "0.65rem",
-                      color: "var(--foreground-subtle)",
-                      textAlign: "center",
-                      marginTop: "-0.25rem",
-                    }}
-                  >
+                  <p className="-mt-1 text-center text-[0.65rem] text-slate-500 dark:text-slate-400">
                     This trial is hosted externally. TrialGo is not
                     responsible for their process.
                   </p>

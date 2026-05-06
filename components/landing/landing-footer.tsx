@@ -31,16 +31,16 @@ const FOOTER_LINKS = {
 
 export function LandingFooter() {
   return (
-    <footer className="relative z-10 border-t border-slate-700 bg-slate-900 text-white">
+    <footer className="relative z-10 border-t border-slate-200 bg-white text-slate-900">
       <div className="mx-auto max-w-6xl px-6 py-16">
         <div className="grid gap-12 md:grid-cols-5">
           {/* Brand column */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <ActivitySquare className="h-5 w-5 text-[var(--secondary-500)]" />
-              <span className="text-lg font-bold">TrialGo</span>
+              <ActivitySquare className="h-5 w-5 text-blue-600" />
+              <span className="text-lg font-bold text-slate-900">TrialGo</span>
             </div>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <p className="text-sm text-slate-500 leading-relaxed">
               AI-powered clinical trial recruitment connecting patients to
               life-saving research.
             </p>
@@ -49,7 +49,7 @@ export function LandingFooter() {
           {/* Link columns */}
           {Object.entries(FOOTER_LINKS).map(([category, links]) => (
             <div key={category}>
-              <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-300">
+              <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-900">
                 {category}
               </h4>
               <ul className="space-y-3">
@@ -57,7 +57,7 @@ export function LandingFooter() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-slate-400 transition-colors hover:text-white"
+                      className="text-sm text-slate-500 transition-colors hover:text-blue-600"
                     >
                       {link.label}
                     </Link>
@@ -69,10 +69,10 @@ export function LandingFooter() {
         </div>
 
         {/* Newsletter */}
-        <div className="mt-12 flex flex-col items-center gap-4 rounded-xl border border-slate-700 bg-slate-800/50 p-6 sm:flex-row sm:justify-between">
+        <div className="mt-12 flex flex-col items-center gap-4 rounded-xl border border-slate-200 bg-slate-50 p-6 sm:flex-row sm:justify-between">
           <div>
-            <p className="font-medium text-white">Stay updated</p>
-            <p className="text-sm text-slate-400">
+            <p className="font-medium text-slate-900">Stay updated</p>
+            <p className="text-sm text-slate-500">
               Get the latest on clinical trial innovation.
             </p>
           </div>
@@ -80,16 +80,16 @@ export function LandingFooter() {
             <input
               type="email"
               placeholder="Enter your email"
-              className="h-10 flex-1 rounded-lg border border-slate-600 bg-slate-800 px-4 text-sm text-white placeholder:text-slate-500 focus:border-[var(--secondary-500)] focus:outline-none focus:ring-1 focus:ring-[var(--secondary-500)] sm:w-64"
+              className="h-10 flex-1 rounded-lg border border-slate-300 bg-white px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:w-64"
             />
-            <button className="h-10 rounded-lg bg-[var(--secondary-600)] px-5 text-sm font-medium text-white transition-colors hover:bg-[var(--secondary-700)]">
+            <button className="h-10 rounded-lg bg-blue-600 px-5 text-sm font-medium text-white transition-colors hover:bg-blue-700">
               Subscribe
             </button>
           </div>
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-700 pt-8 sm:flex-row">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-8 sm:flex-row">
           <p className="text-sm text-slate-500">
             © {new Date().getFullYear()} TrialGo. All rights reserved.
           </p>

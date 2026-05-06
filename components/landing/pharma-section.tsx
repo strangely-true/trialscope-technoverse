@@ -17,7 +17,7 @@ export function PharmaSection() {
   const { ref, isVisible } = useIntersection({ threshold: 0.15 });
 
   return (
-    <section ref={ref} className="relative z-10 py-24 bg-[var(--surface-primary)] dark:bg-slate-900">
+    <section ref={ref} className="relative z-10 py-24 bg-white border-y border-slate-200">
       <div className="mx-auto max-w-6xl px-6">
         <div className="grid items-center gap-12 md:grid-cols-2">
           {/* Left: Text */}
@@ -29,10 +29,10 @@ export function PharmaSection() {
                 : "opacity-0 -translate-x-8"
             )}
           >
-            <h2 className="text-3xl font-bold tracking-tight text-[var(--text-primary)] sm:text-4xl">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
               Built for Pharma Teams
             </h2>
-            <p className="mt-4 text-lg text-[var(--text-secondary)]">
+            <p className="mt-4 text-lg text-slate-600">
               Accelerate recruitment timelines with AI-driven candidate matching
               and automated outreach pipelines.
             </p>
@@ -44,17 +44,17 @@ export function PharmaSection() {
                   className="flex items-start gap-3"
                   style={{ transitionDelay: `${i * 100 + 300}ms` }}
                 >
-                  <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--secondary-100)]">
-                    <Check className="h-3 w-3 text-[var(--secondary-600)]" />
+                  <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100">
+                    <Check className="h-3 w-3 text-blue-600" />
                   </div>
-                  <span className="text-sm text-[var(--text-secondary)]">
+                  <span className="text-sm text-slate-600">
                     {benefit}
                   </span>
                 </li>
               ))}
             </ul>
 
-            <Button asChild className="mt-8 rounded-full px-8" size="lg">
+            <Button asChild className="mt-8 rounded-full px-8 shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5" size="lg">
               <Link href="/pharma/login">
                 Explore Pharma Portal
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -71,13 +71,13 @@ export function PharmaSection() {
                 : "opacity-0 translate-x-8"
             )}
           >
-            <div className="relative rounded-2xl border border-[var(--border-default)] bg-[var(--background)] p-6 shadow-[var(--shadow-xl)] dark:bg-slate-800">
+            <div className="relative rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl shadow-slate-200/60">
               {/* Mock dashboard header */}
               <div className="mb-4 flex items-center gap-2">
                 <div className="h-3 w-3 rounded-full bg-red-400" />
                 <div className="h-3 w-3 rounded-full bg-amber-400" />
                 <div className="h-3 w-3 rounded-full bg-emerald-400" />
-                <span className="ml-3 text-xs text-[var(--text-muted)]">
+                <span className="ml-3 text-xs font-medium text-slate-500">
                   Pharma Analytics Dashboard
                 </span>
               </div>
@@ -91,12 +91,12 @@ export function PharmaSection() {
                 ].map((stat) => (
                   <div
                     key={stat.label}
-                    className="rounded-lg bg-[var(--surface-primary)] p-3 text-center dark:bg-slate-700"
+                    className="rounded-lg border border-slate-100 bg-slate-50 p-3 text-center"
                   >
-                    <p className="text-lg font-bold text-[var(--text-primary)]">
+                    <p className="text-lg font-bold text-slate-900">
                       {stat.value}
                     </p>
-                    <p className="text-[10px] text-[var(--text-muted)]">
+                    <p className="text-[10px] font-medium text-slate-500">
                       {stat.label}
                     </p>
                   </div>
@@ -104,11 +104,11 @@ export function PharmaSection() {
               </div>
 
               {/* Mock chart area */}
-              <div className="h-32 rounded-lg bg-gradient-to-t from-[var(--secondary-50)] to-transparent dark:from-[var(--secondary-100)] flex items-end px-4 pb-4 gap-2">
+              <div className="h-32 rounded-lg bg-gradient-to-t from-blue-50 to-transparent flex items-end px-4 pb-4 gap-2">
                 {[40, 55, 45, 70, 65, 80, 75, 90, 85, 95].map((h, i) => (
                   <div
                     key={i}
-                    className="flex-1 rounded-t bg-[var(--secondary-500)] opacity-70"
+                    className="flex-1 rounded-t bg-blue-500"
                     style={{ height: `${h}%` }}
                   />
                 ))}

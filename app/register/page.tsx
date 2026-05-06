@@ -1,12 +1,13 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { AuroraBackgroundAuth } from "@/components/ui/aurora-background";
-import { PageTransition } from "@/components/ui/page-transition";
-import { TrialGoLoaderInline } from "@/components/ui/trialgo-loader";
-import { CheckCircle2, ChevronRight, Lock } from "lucide-react";
+import { useState } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { AuroraBackgroundAuth } from "@/components/ui/aurora-background"
+import { PageTransition } from "@/components/ui/page-transition"
+import { TrialGoLoaderInline } from "@/components/ui/trialgo-loader"
+import { CheckCircle2, ChevronRight, Lock } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 const ROLES = [
   {
@@ -27,7 +28,7 @@ const ROLES = [
     icon: "🏥",
     desc: "Post trials and recruit qualified candidates",
   },
-];
+]
 
 const LANGUAGES = [
   "English",
@@ -39,82 +40,82 @@ const LANGUAGES = [
   "Kannada",
   "Malayalam",
   "Gujarati",
-];
+]
 
 export default function RegisterPage() {
-  const router = useRouter();
-  const [role, setRole] = useState("");
-  const [step, setStep] = useState(1);
+  const router = useRouter()
+  const [role, setRole] = useState("")
+  const [step, setStep] = useState(1)
   const [form, setForm] = useState({
     email: "",
     password: "",
     full_name: "",
     phone_number: "",
     preferred_language: "English",
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [otp, setOtp] = useState("");
-  const [userId, setUserId] = useState<number | null>(null);
+  })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [otp, setOtp] = useState("")
+  const [userId, setUserId] = useState<number | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+    e.preventDefault()
+    setLoading(true)
+    setError("")
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, role }),
-      });
+      })
       if (!res.ok) {
-        const d = await res.json();
-        throw new Error(d.detail || "Registration failed");
+        const d = await res.json()
+        throw new Error(d.detail || "Registration failed")
       }
-      const data = await res.json();
+      const data = await res.json()
 
       if (form.phone_number) {
-        setUserId(data.id);
-        setStep(3);
+        setUserId(data.id)
+        setStep(3)
       } else {
         // Redirect by role
-        if (role === "patient") router.push("/login?registered=1");
+        if (role === "patient") router.push("/login?registered=1")
         else if (role === "coordinator")
-          router.push("/coordinator/login?registered=1");
-        else router.push("/pharma/login?registered=1");
+          router.push("/coordinator/login?registered=1")
+        else router.push("/pharma/login?registered=1")
       }
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleVerifyOTP = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+    e.preventDefault()
+    setLoading(true)
+    setError("")
     try {
       const res = await fetch("/api/auth/verify-phone", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId, otp }),
-      });
+      })
       if (!res.ok) {
-        const d = await res.json();
-        throw new Error(d.detail || "Verification failed");
+        const d = await res.json()
+        throw new Error(d.detail || "Verification failed")
       }
       // Redirect by role after successful verification
-      if (role === "patient") router.push("/login?registered=1");
+      if (role === "patient") router.push("/login?registered=1")
       else if (role === "coordinator")
-        router.push("/coordinator/login?registered=1");
-      else router.push("/pharma/login?registered=1");
+        router.push("/coordinator/login?registered=1")
+      else router.push("/pharma/login?registered=1")
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <AuroraBackgroundAuth>
@@ -123,25 +124,31 @@ export default function RegisterPage() {
           <div className="w-full max-w-lg">
             {/* Logo */}
             <div className="mb-8 text-center">
-              <Link href="/" className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 transition-opacity hover:opacity-80"
+              >
                 <span className="text-2xl">🧬</span>
-                <span className="font-bold text-2xl text-text-primary dark:text-text-primary">
-                  Trial<span className="text-secondary-600 dark:text-secondary-400">Go</span>
+                <span className="text-slate-900 text-2xl font-bold">
+                  Trial
+                  <span className="text-blue-600">
+                    Go
+                  </span>
                 </span>
               </Link>
-              <h1 className="mt-6 text-h1-dash text-text-primary dark:text-text-primary">
+              <h1 className="text-3xl font-bold text-slate-900 mt-6">
                 Create your account
               </h1>
-              <p className="mt-2 text-body text-text-secondary dark:text-text-secondary">
+              <p className="text-slate-600 mt-2">
                 Join the AI-powered clinical trial ecosystem
               </p>
             </div>
 
             {/* Card Container */}
-            <div className="rounded-2xl border border-border-default/30 dark:border-border-subtle bg-surface-primary/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-lg dark:shadow-slate-900/50 p-8">
+            <div className="border border-slate-200 bg-white/90 rounded-2xl p-8 shadow-xl backdrop-blur-xl dark:border-slate-700 dark:bg-slate-800/80">
               {step === 1 ? (
                 <>
-                  <p className="text-overline text-text-secondary dark:text-text-secondary mb-5 uppercase">
+                  <p className="mb-5 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
                     Select your role
                   </p>
                   <div className="flex flex-col gap-3">
@@ -149,27 +156,30 @@ export default function RegisterPage() {
                       <button
                         key={r.value}
                         onClick={() => {
-                          setRole(r.value);
-                          setStep(2);
+                          setRole(r.value)
+                          setStep(2)
                         }}
-                        className="group flex items-center gap-4 p-5 text-left rounded-lg border border-border-default/50 dark:border-border-subtle/50 hover:border-secondary-600 dark:hover:border-secondary-400 bg-surface-secondary/50 dark:bg-slate-700/50 hover:bg-surface-secondary dark:hover:bg-slate-700 transition-all"
+                        className="group flex items-center gap-4 rounded-lg border border-slate-200 bg-slate-50 p-5 text-left transition-all hover:border-blue-500 hover:bg-blue-50 hover:shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:hover:border-blue-500"
                       >
                         <span className="text-2xl">{r.icon}</span>
                         <div className="flex-1">
-                          <div className="font-semibold text-text-primary dark:text-text-primary">
+                          <div className="font-semibold text-slate-900 dark:text-white">
                             {r.label}
                           </div>
-                          <div className="text-sm text-text-muted dark:text-text-muted mt-1">
+                          <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                             {r.desc}
                           </div>
                         </div>
-                        <ChevronRight className="w-5 h-5 text-text-muted dark:text-text-muted group-hover:text-secondary-600 dark:group-hover:text-secondary-400 transition-colors" />
+                        <ChevronRight className="h-5 w-5 text-slate-400 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400" />
                       </button>
                     ))}
                   </div>
-                  <p className="mt-6 text-center text-sm text-text-secondary dark:text-text-secondary">
+                  <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
                     Already have an account?{" "}
-                    <Link href="/login" className="text-secondary-600 dark:text-secondary-400 hover:underline font-semibold">
+                    <Link
+                      href="/login"
+                      className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                    >
                       Sign in
                     </Link>
                   </p>
@@ -179,28 +189,28 @@ export default function RegisterPage() {
                   <button
                     type="button"
                     onClick={() => setStep(1)}
-                    className="text-text-muted hover:text-text-secondary dark:text-text-muted dark:hover:text-text-secondary text-sm font-medium transition-colors mb-2"
+                    className="mb-2 text-left text-sm font-medium text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                   >
                     ← Back
                   </button>
 
                   {/* Role indicator */}
-                  <div className="rounded-lg bg-secondary-50 dark:bg-secondary-900/30 border border-secondary-200 dark:border-secondary-700/50 p-4 flex items-center gap-3">
+                  <div className="flex items-center gap-3 rounded-lg border border-blue-100 bg-blue-50 p-4 dark:border-blue-900/30 dark:bg-blue-900/20">
                     <span className="text-lg">
                       {ROLES.find((r) => r.value === role)?.icon}
                     </span>
-                    <span className="font-semibold text-text-primary dark:text-text-primary">
+                    <span className="font-semibold text-slate-900 dark:text-white">
                       {ROLES.find((r) => r.value === role)?.label}
                     </span>
                   </div>
 
                   {/* Full Name */}
                   <div>
-                    <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary mb-2">
+                    <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
                       Full Name
                     </label>
                     <input
-                      className="w-full px-4 py-3 rounded-lg border border-border-default dark:border-border-subtle bg-surface-primary dark:bg-slate-700 text-text-primary dark:text-text-primary placeholder-text-muted dark:placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-secondary-600 focus:border-transparent transition-all"
+                      className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 transition-all placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
                       placeholder="Anjali Sharma"
                       required
                       value={form.full_name}
@@ -212,11 +222,11 @@ export default function RegisterPage() {
 
                   {/* Email */}
                   <div>
-                    <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary mb-2">
+                    <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
                       Email
                     </label>
                     <input
-                      className="w-full px-4 py-3 rounded-lg border border-border-default dark:border-border-subtle bg-surface-primary dark:bg-slate-700 text-text-primary dark:text-text-primary placeholder-text-muted dark:placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-secondary-600 focus:border-transparent transition-all"
+                      className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 transition-all placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
                       type="email"
                       placeholder="you@example.com"
                       required
@@ -229,11 +239,11 @@ export default function RegisterPage() {
 
                   {/* Phone Number */}
                   <div>
-                    <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary mb-2">
+                    <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
                       Mobile Number
                     </label>
                     <input
-                      className="w-full px-4 py-3 rounded-lg border border-border-default dark:border-border-subtle bg-surface-primary dark:bg-slate-700 text-text-primary dark:text-text-primary placeholder-text-muted dark:placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-secondary-600 focus:border-transparent transition-all"
+                      className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 transition-all placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
                       type="tel"
                       placeholder="+91 98765 43210"
                       required
@@ -246,11 +256,11 @@ export default function RegisterPage() {
 
                   {/* Password */}
                   <div>
-                    <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary mb-2">
+                    <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
                       Password
                     </label>
                     <input
-                      className="w-full px-4 py-3 rounded-lg border border-border-default dark:border-border-subtle bg-surface-primary dark:bg-slate-700 text-text-primary dark:text-text-primary placeholder-text-muted dark:placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-secondary-600 focus:border-transparent transition-all"
+                      className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 transition-all placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
                       type="password"
                       placeholder="Min. 8 characters"
                       required
@@ -264,11 +274,11 @@ export default function RegisterPage() {
 
                   {/* Preferred Language */}
                   <div>
-                    <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary mb-2">
+                    <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
                       Preferred Language
                     </label>
                     <select
-                      className="w-full px-4 py-3 rounded-lg border border-border-default dark:border-border-subtle bg-surface-primary dark:bg-slate-700 text-text-primary dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-secondary-600 focus:border-transparent transition-all"
+                      className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 transition-all focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
                       value={form.preferred_language}
                       onChange={(e) =>
                         setForm((f) => ({
@@ -287,89 +297,99 @@ export default function RegisterPage() {
 
                   {/* Error Message */}
                   {error && (
-                    <div className="rounded-lg bg-danger-light/10 dark:bg-danger/10 border border-danger-light dark:border-danger/30 p-3">
-                      <p className="text-sm font-medium text-danger dark:text-danger-light">
+                    <div className="rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-900/30 dark:bg-red-900/20">
+                      <p className="text-sm font-medium text-red-600 dark:text-red-400">
                         {error}
                       </p>
                     </div>
                   )}
 
                   {/* Submit Button */}
-                  <button
+                  <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-3 px-4 rounded-lg bg-secondary-600 hover:bg-secondary-700 dark:bg-secondary-600 dark:hover:bg-secondary-500 text-white font-semibold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-blue hover:shadow-lg"
+                    className="w-full h-12 text-base"
+                    size="lg"
                   >
                     {loading ? (
                       <>
-                        <TrialGoLoaderInline />
-                        <span>Creating account...</span>
+                        <TrialGoLoaderInline className="mr-2" />
+                        Creating account...
                       </>
                     ) : (
                       <>
                         Create Account
-                        <ChevronRight className="w-4 h-4" />
+                        <ChevronRight className="ml-2 h-4 w-4" />
                       </>
                     )}
-                  </button>
+                  </Button>
 
-                  <p className="text-center text-sm text-text-secondary dark:text-text-secondary">
+                  <p className="mt-4 text-center text-sm text-slate-500 dark:text-slate-400">
                     Already have an account?{" "}
-                    <Link href="/login" className="text-secondary-600 dark:text-secondary-400 hover:underline font-semibold">
+                    <Link
+                      href="/login"
+                      className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                    >
                       Sign in
                     </Link>
                   </p>
                 </form>
               ) : (
                 // Step 3: OTP Verification
-                <form onSubmit={handleVerifyOTP} className="flex flex-col gap-6">
+                <form
+                  onSubmit={handleVerifyOTP}
+                  className="flex flex-col gap-6"
+                >
                   <div className="text-center">
-                    <div className="text-5xl mb-4">📱</div>
-                    <h2 className="text-h3 text-text-primary dark:text-text-primary font-bold">
+                    <div className="mb-4 text-5xl">📱</div>
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">
                       Verify your phone
                     </h2>
-                    <p className="text-body text-text-secondary dark:text-text-secondary mt-2">
+                    <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
                       Enter the 4-digit OTP sent to {form.phone_number}
                     </p>
                   </div>
 
                   {/* OTP Input */}
                   <input
-                    className="w-full px-4 py-4 text-center text-2xl font-bold tracking-widest rounded-lg border border-border-default dark:border-border-subtle bg-surface-primary dark:bg-slate-700 text-text-primary dark:text-text-primary placeholder-text-muted dark:placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-secondary-600 focus:border-transparent transition-all"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-4 py-4 text-center text-2xl font-bold tracking-widest text-slate-900 transition-all placeholder:text-slate-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
                     placeholder="1234"
                     maxLength={4}
                     required
                     value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ""))}
+                    onChange={(e) =>
+                      setOtp(e.target.value.replace(/[^0-9]/g, ""))
+                    }
                   />
 
                   {/* Error Message */}
                   {error && (
-                    <div className="rounded-lg bg-danger-light/10 dark:bg-danger/10 border border-danger-light dark:border-danger/30 p-3">
-                      <p className="text-sm font-medium text-danger dark:text-danger-light">
+                    <div className="rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-900/30 dark:bg-red-900/20">
+                      <p className="text-sm font-medium text-red-600 dark:text-red-400">
                         {error}
                       </p>
                     </div>
                   )}
 
                   {/* Submit Button */}
-                  <button
+                  <Button
                     type="submit"
                     disabled={loading || otp.length !== 4}
-                    className="w-full py-3 px-4 rounded-lg bg-secondary-600 hover:bg-secondary-700 dark:bg-secondary-600 dark:hover:bg-secondary-500 text-white font-semibold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-blue hover:shadow-lg"
+                    className="w-full h-12 text-base"
+                    size="lg"
                   >
                     {loading ? (
                       <>
-                        <TrialGoLoaderInline />
-                        <span>Verifying...</span>
+                        <TrialGoLoaderInline className="mr-2" />
+                        Verifying...
                       </>
                     ) : (
                       <>
                         Verify OTP
-                        <CheckCircle2 className="w-4 h-4" />
+                        <CheckCircle2 className="ml-2 h-4 w-4" />
                       </>
                     )}
-                  </button>
+                  </Button>
                 </form>
               )}
             </div>
@@ -377,5 +397,5 @@ export default function RegisterPage() {
         </PageTransition>
       </div>
     </AuroraBackgroundAuth>
-  );
+  )
 }

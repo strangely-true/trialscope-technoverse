@@ -192,7 +192,6 @@
 
 @layer base {
   * {
-    border-color: var(--glass-border);
     box-sizing: border-box;
   }
 
@@ -202,7 +201,7 @@
 
   body {
     background-color: var(--background);
-    color: var(--foreground);
+    color: var(--text-primary);
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
@@ -383,7 +382,7 @@
   50% { box-shadow: 0 0 35px var(--primary-glow), 0 0 60px rgba(2, 132, 199, 0.2); }
 }
 @keyframes pulse-glow-dark {
-    0%, 100% { box-shadow: 0 0 15px var(--primary-glow); }
+  0%, 100% { box-shadow: 0 0 15px var(--primary-glow); }
   50% { box-shadow: 0 0 35px var(--primary-glow), 0 0 60px rgba(0, 114, 255, 0.2); }
 }
 
@@ -395,6 +394,13 @@
 @keyframes fade-in-up {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Aurora hero animation */
+@keyframes aurora {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .animate-float { animation: float 4s ease-in-out infinite; }

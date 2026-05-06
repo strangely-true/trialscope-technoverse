@@ -35,7 +35,7 @@ export function StatCard({
     return (
       <div
         className={cn(
-          "rounded-2xl border border-[var(--border-default)] bg-[var(--surface-primary)] p-6 dark:bg-slate-800",
+          "rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800",
           className
         )}
       >
@@ -49,25 +49,25 @@ export function StatCard({
   return (
     <div
       className={cn(
-        "group rounded-2xl border border-[var(--border-default)] bg-[var(--surface-primary)] p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-blue)] dark:bg-slate-800",
+        "group rounded-2xl border border-slate-200 bg-white p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-800",
         className
       )}
     >
       {/* Icon */}
       {Icon && (
-        <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[var(--secondary-50)] dark:bg-[var(--secondary-100)]">
-          <Icon className="h-5 w-5 text-[var(--secondary-600)]" />
+        <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/30">
+          <Icon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
         </div>
       )}
 
       {/* Title */}
-      <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+      <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
         {title}
       </p>
 
       {/* Value */}
       <div className="mt-1 flex items-baseline gap-2">
-        <span className="text-3xl font-bold text-[var(--text-primary)]">
+        <span className="text-3xl font-bold text-slate-900 dark:text-white">
           {animate && typeof value === "number" ? (
             <AnimatedCounter targetNumber={value} format="number" />
           ) : (

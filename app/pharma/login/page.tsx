@@ -1,41 +1,42 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { AuroraBackgroundAuth } from "@/components/ui/aurora-background";
-import { PageTransition } from "@/components/ui/page-transition";
-import { TrialGoLoaderInline } from "@/components/ui/trialgo-loader";
-import { LogIn } from "lucide-react";
+import { useState } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { AuroraBackgroundAuth } from "@/components/ui/aurora-background"
+import { PageTransition } from "@/components/ui/page-transition"
+import { TrialGoLoaderInline } from "@/components/ui/trialgo-loader"
+import { LogIn } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 export default function PharmaLoginPage() {
-  const router = useRouter();
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const router = useRouter()
+  const [form, setForm] = useState({ email: "", password: "" })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+    e.preventDefault()
+    setLoading(true)
+    setError("")
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
-      });
-      if (!res.ok) throw new Error("Invalid credentials");
-      const data = await res.json();
-      if (data.role !== "pharma") throw new Error("Not a pharma account");
-      localStorage.setItem("trialgo_token", data.access_token);
-      localStorage.setItem("trialgo_role", data.role);
-      router.push("/pharma/analytics");
+      })
+      if (!res.ok) throw new Error("Invalid credentials")
+      const data = await res.json()
+      if (data.role !== "pharma") throw new Error("Not a pharma account")
+      localStorage.setItem("trialgo_token", data.access_token)
+      localStorage.setItem("trialgo_role", data.role)
+      router.push("/pharma/analytics")
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <AuroraBackgroundAuth>
@@ -44,30 +45,36 @@ export default function PharmaLoginPage() {
           <div className="w-full max-w-md">
             {/* Logo */}
             <div className="mb-8 text-center">
-              <Link href="/" className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 transition-opacity hover:opacity-80"
+              >
                 <span className="text-2xl">🧬</span>
-                <span className="font-bold text-2xl text-text-primary dark:text-text-primary">
-                  Trial<span className="text-secondary-600 dark:text-secondary-400">Go</span>
+                <span className="text-slate-900 text-2xl font-bold">
+                  Trial
+                  <span className="text-blue-600">
+                    Go
+                  </span>
                 </span>
               </Link>
-              <div className="mt-4 inline-block rounded-lg bg-info-light dark:bg-info/10 border border-info dark:border-info/30 px-3 py-1 text-sm font-medium text-info dark:text-info mb-3">
+              <div className="mb-3 mt-4 inline-block rounded-lg border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 dark:border-blue-900/30 dark:bg-blue-900/20 dark:text-blue-400">
                 🏥 Pharma Portal
               </div>
-              <h1 className="text-h1-dash text-text-primary dark:text-text-primary">
+              <h1 className="text-3xl font-bold text-slate-900">
                 Pharma Sign In
               </h1>
             </div>
 
             {/* Card Container */}
-            <div className="rounded-2xl border border-border-default/30 dark:border-border-subtle bg-surface-primary/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-lg dark:shadow-slate-900/50 p-8">
+            <div className="border border-slate-200 bg-white/90 rounded-2xl p-8 shadow-xl backdrop-blur-xl dark:border-slate-700 dark:bg-slate-800/80">
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 {/* Email Input */}
                 <div>
-                  <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary mb-2">
+                  <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
                     Corporate Email
                   </label>
                   <input
-                    className="w-full px-4 py-3 rounded-lg border border-border-default dark:border-border-subtle bg-surface-primary dark:bg-slate-700 text-text-primary dark:text-text-primary placeholder-text-muted dark:placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-secondary-600 focus:border-transparent transition-all"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 transition-all placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
                     type="email"
                     placeholder="you@pharmacompany.com"
                     required
@@ -80,11 +87,11 @@ export default function PharmaLoginPage() {
 
                 {/* Password Input */}
                 <div>
-                  <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary mb-2">
+                  <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
                     Password
                   </label>
                   <input
-                    className="w-full px-4 py-3 rounded-lg border border-border-default dark:border-border-subtle bg-surface-primary dark:bg-slate-700 text-text-primary dark:text-text-primary placeholder-text-muted dark:placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-secondary-600 focus:border-transparent transition-all"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 transition-all placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
                     type="password"
                     placeholder="Password"
                     required
@@ -96,44 +103,50 @@ export default function PharmaLoginPage() {
                 </div>
 
                 {/* Demo Credentials */}
-                <div className="rounded-lg bg-info-light/10 dark:bg-info/10 border border-info-light dark:border-info/30 p-3">
-                  <p className="text-xs font-medium text-info dark:text-info-light">
-                    💡 Demo: <span className="font-semibold">pharma@trialgo.ai</span> / <span className="font-semibold">demo1234</span>
+                <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-900/30 dark:bg-blue-900/20">
+                  <p className="text-xs font-medium text-blue-800 dark:text-blue-400">
+                    💡 Demo:{" "}
+                    <span className="font-semibold text-blue-900 dark:text-blue-300">pharma@trialgo.ai</span> /{" "}
+                    <span className="font-semibold text-blue-900 dark:text-blue-300">demo1234</span>
                   </p>
                 </div>
 
                 {/* Error Message */}
                 {error && (
-                  <div className="rounded-lg bg-danger-light/10 dark:bg-danger/10 border border-danger-light dark:border-danger/30 p-3">
-                    <p className="text-sm font-medium text-danger dark:text-danger-light">
+                  <div className="rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-900/30 dark:bg-red-900/20">
+                    <p className="text-sm font-medium text-red-600 dark:text-red-400">
                       {error}
                     </p>
                   </div>
                 )}
 
                 {/* Submit Button */}
-                <button
+                <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 px-4 rounded-lg bg-secondary-600 hover:bg-secondary-700 dark:bg-secondary-600 dark:hover:bg-secondary-500 text-white font-semibold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-blue hover:shadow-lg mt-2"
+                  className="mt-2 w-full h-12 text-base"
+                  size="lg"
                 >
                   {loading ? (
                     <>
-                      <TrialGoLoaderInline />
-                      <span>Signing in...</span>
+                      <TrialGoLoaderInline className="mr-2" />
+                      Signing in...
                     </>
                   ) : (
                     <>
                       Access Portal
-                      <LogIn className="w-4 h-4" />
+                      <LogIn className="ml-2 h-4 w-4" />
                     </>
                   )}
-                </button>
+                </Button>
 
                 {/* Footer Link */}
-                <p className="text-center text-sm text-text-secondary dark:text-text-secondary">
+                <p className="mt-4 text-center text-sm text-slate-500 dark:text-slate-400">
                   New to TrialGo?{" "}
-                  <Link href="/register" className="text-secondary-600 dark:text-secondary-400 hover:underline font-semibold">
+                  <Link
+                    href="/register"
+                    className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                  >
                     Register your company
                   </Link>
                 </p>
@@ -143,5 +156,5 @@ export default function PharmaLoginPage() {
         </PageTransition>
       </div>
     </AuroraBackgroundAuth>
-  );
+  )
 }

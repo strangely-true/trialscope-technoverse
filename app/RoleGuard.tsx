@@ -5,6 +5,9 @@ import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.
 
 const publicRoutes = ["/", "/login", "/register", "/pharma/login", "/coordinator/login"]
 
+// Routes only patients can access
+const patientRoutes = ["/patient", "/dashboard", "/trials", "/onboarding", "/chatbot", "/profile"]
+
 function useIsClient() {
   return useSyncExternalStore(
     () => () => {},
@@ -16,7 +19,7 @@ function useIsClient() {
 function redirectBasedOnRole(role: string | null, router: AppRouterInstance) {
   if (role === "pharma") router.replace("/pharma/trials")
   else if (role === "coordinator") router.replace("/coordinator/cohort")
-  else if (role === "patient") router.replace("/dashboard")
+  else if (role === "patient") router.replace("/patient/dashboard")
   else router.replace("/login")
 }
 
@@ -76,11 +79,7 @@ export function RoleGuard() {
       }
 
       // Patient route protection (dashboard, trials, patient, onboarding)
-      const isPatientRoute =
-        pathname.startsWith("/dashboard") ||
-        pathname.startsWith("/trials") ||
-        pathname.startsWith("/patient") ||
-        pathname.startsWith("/onboarding")
+      const isPatientRoute = patientRoutes.some((r) => pathname.startsWith(r))
 
       if (isPatientRoute) {
         if (role !== "patient") {
