@@ -18,7 +18,7 @@ export default function CoordinatorLayout({
     const token = localStorage.getItem("trialgo_token");
     const role = localStorage.getItem("trialgo_role");
     if (!token || role !== "coordinator") {
-      router.replace("/coordinator/login");
+      router.replace("/login");
       return;
     }
     const user = localStorage.getItem("trialgo_user");

@@ -18,7 +18,7 @@ export default function PharmaLayout({
     const token = localStorage.getItem("trialgo_token");
     const role = localStorage.getItem("trialgo_role");
     if (!token || role !== "pharma") {
-      router.replace("/pharma/login");
+      router.replace("/login");
       return;
     }
     const user = localStorage.getItem("trialgo_user");

@@ -79,10 +79,7 @@ export default function RegisterPage() {
         setStep(3)
       } else {
         // Redirect by role
-        if (role === "patient") router.push("/login?registered=1")
-        else if (role === "coordinator")
-          router.push("/coordinator/login?registered=1")
-        else router.push("/pharma/login?registered=1")
+        router.push("/login?registered=1")
       }
     } catch (err: any) {
       setError(err.message)
@@ -105,11 +102,8 @@ export default function RegisterPage() {
         const d = await res.json()
         throw new Error(d.detail || "Verification failed")
       }
-      // Redirect by role after successful verification
-      if (role === "patient") router.push("/login?registered=1")
-      else if (role === "coordinator")
-        router.push("/coordinator/login?registered=1")
-      else router.push("/pharma/login?registered=1")
+      // Redirect after successful verification
+      router.push("/login?registered=1")
     } catch (err: any) {
       setError(err.message)
     } finally {

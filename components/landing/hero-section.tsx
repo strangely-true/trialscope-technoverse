@@ -46,7 +46,7 @@ export function HeroSection() {
           <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
         </Link>
         <Link
-          href="/pharma/login"
+          href="/login"
           className="flex h-14 w-full items-center justify-center rounded-full border border-slate-200 bg-white/80 px-10 text-lg font-semibold text-slate-700 shadow-sm backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 sm:w-auto"
         >
           I&apos;m a Pharma Company

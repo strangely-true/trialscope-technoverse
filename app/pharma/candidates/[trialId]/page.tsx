@@ -103,7 +103,7 @@ export default function PharmaCandidatesPage() {
   useEffect(() => {
     const token = localStorage.getItem("trialgo_token")
     if (!token) {
-      router.push("/pharma/login")
+      router.push("/login")
       return
     }
 
@@ -196,7 +196,7 @@ export default function PharmaCandidatesPage() {
 
     const token = localStorage.getItem("trialgo_token")
     if (!token) {
-      router.push("/pharma/login")
+      router.push("/login")
       return
     }
 
@@ -236,7 +236,7 @@ export default function PharmaCandidatesPage() {
     }
     const token = localStorage.getItem("trialgo_token")
     if (!token) {
-      router.push("/pharma/login")
+      router.push("/login")
       return
     }
 
@@ -275,7 +275,7 @@ export default function PharmaCandidatesPage() {
   const revealIdentity = async (candidateId: number | string) => {
     const token = localStorage.getItem("trialgo_token")
     if (!token) {
-      router.push("/pharma/login")
+      router.push("/login")
       return
     }
 
@@ -309,7 +309,7 @@ export default function PharmaCandidatesPage() {
     if (!subjectId || trialId === null) return
     const token = localStorage.getItem("trialgo_token")
     if (!token) {
-      router.push("/pharma/login")
+      router.push("/login")
       return
     }
 

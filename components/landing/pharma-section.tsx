@@ -55,7 +55,7 @@ export function PharmaSection() {
             </ul>
 
             <Button asChild className="mt-8 rounded-full px-8 shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5" size="lg">
-              <Link href="/pharma/login">
+              <Link href="/login">
                 Explore Pharma Portal
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>

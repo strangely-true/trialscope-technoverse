@@ -75,8 +75,8 @@ interface AppSidebarProps {
 
 const LOGOUT_ROUTES: Record<UserRole, string> = {
   patient: "/login",
-  coordinator: "/coordinator/login",
-  pharma: "/pharma/login",
+  coordinator: "/login",
+  pharma: "/login",
 };
 
 export function AppSidebar({

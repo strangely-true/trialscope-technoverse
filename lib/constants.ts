@@ -4,8 +4,7 @@ export const ROUTES = {
   home: "/",
   login: "/login",
   register: "/register",
-  coordinatorLogin: "/coordinator/login",
-  pharmaLogin: "/pharma/login",
+
 
   // Patient
   dashboard: "/dashboard",

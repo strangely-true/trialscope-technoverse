@@ -13,7 +13,7 @@ export default function ConsentLayout({ children }: { children: React.ReactNode 
   useEffect(() => {
     const token = localStorage.getItem("trialgo_token");
     const role = localStorage.getItem("trialgo_role");
-    if (!token || role !== "pharma") { router.replace("/pharma/login"); return; }
+    if (!token || role !== "pharma") { router.replace("/login"); return; }
     try {
       const u = JSON.parse(localStorage.getItem("trialgo_user") || "{}");
       setUserName(u.full_name || u.email || "Pharma User");

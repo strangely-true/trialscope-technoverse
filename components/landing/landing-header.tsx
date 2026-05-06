@@ -14,10 +14,10 @@ export function LandingHeader() {
   }, [])
 
   const navLinks = [
-    { href: "#impact", label: "Impact" },
-    { href: "/register", label: "For Patients" },
-    { href: "/pharma/login", label: "For Pharma" },
-    { href: "/coordinator/login", label: "Coordinator" },
+    { href: "#impact", label: "Impact", key: "impact" },
+    { href: "/register", label: "For Patients", key: "patients" },
+    { href: "/login", label: "For Pharma", key: "pharma" },
+    { href: "/login", label: "Coordinator", key: "coordinator" },
   ]
 
   return (
@@ -43,7 +43,7 @@ export function LandingHeader() {
         <nav className="hidden items-center gap-8 md:flex">
           {navLinks.map((l) => (
             <Link
-              key={l.href}
+              key={l.key}
               href={l.href}
               className="text-sm font-medium text-slate-600 transition-colors hover:text-slate-900"
             >
@@ -84,7 +84,7 @@ export function LandingHeader() {
           <nav className="flex flex-col gap-3">
             {navLinks.map((l) => (
               <Link
-                key={l.href}
+                key={l.key}
                 href={l.href}
                 onClick={() => setMobileOpen(false)}
                 className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900"

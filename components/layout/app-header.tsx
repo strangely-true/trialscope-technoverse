@@ -20,8 +20,8 @@ const ROLE_LABELS: Record<UserRole, string> = {
 
 const LOGOUT_ROUTES: Record<UserRole, string> = {
   patient: "/login",
-  coordinator: "/coordinator/login",
-  pharma: "/pharma/login",
+  coordinator: "/login",
+  pharma: "/login",
 };
 
 export function AppHeader({ role, userName = "User", onMenuClick }: AppHeaderProps) {

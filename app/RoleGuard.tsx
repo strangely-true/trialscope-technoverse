@@ -3,7 +3,7 @@ import { useEffect, useSyncExternalStore } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 
-const publicRoutes = ["/", "/login", "/register", "/pharma/login", "/coordinator/login"]
+const publicRoutes = ["/", "/login", "/register"]
 
 // Routes only patients can access
 const patientRoutes = ["/patient", "/dashboard", "/trials", "/onboarding", "/chatbot", "/profile"]
@@ -36,13 +36,7 @@ export function RoleGuard() {
 
     // If no token and not a public route, redirect to login
     if (!token && !publicRoutes.includes(pathname)) {
-      if (pathname.startsWith("/pharma")) {
-        router.replace("/pharma/login")
-      } else if (pathname.startsWith("/coordinator")) {
-        router.replace("/coordinator/login")
-      } else {
-        router.replace("/login")
-      }
+      router.replace("/login")
       return
     }
 
@@ -55,7 +49,7 @@ export function RoleGuard() {
       }
 
       // Pharma route protection
-      if (pathname.startsWith("/pharma") && !pathname.includes("login")) {
+      if (pathname.startsWith("/pharma")) {
         if (role !== "pharma") {
           redirectBasedOnRole(role, router)
           return
@@ -63,7 +57,7 @@ export function RoleGuard() {
       }
 
       // Coordinator route protection
-      if (pathname.startsWith("/coordinator") && !pathname.includes("login")) {
+      if (pathname.startsWith("/coordinator")) {
         if (role !== "coordinator") {
           redirectBasedOnRole(role, router)
           return
