@@ -309,6 +309,7 @@ export default function PharmaAnalyticsPage() {
               <h2 className="mb-4 text-base font-semibold text-slate-900 dark:text-white">Quick Actions</h2>
               <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {[
+                  { label: "View Anomalies", href: `/pharma/anomalies?trial=${selectedTrialId}`, icon: AlertTriangle },
                   { label: "Create New Trial", href: "/pharma/create-trial", icon: Plus },
                   { label: "View Candidates", href: `/pharma/candidates/${selectedTrialId}`, icon: Users },
                   { label: "Global Discovery", href: `/pharma/discovery/${selectedTrialId}`, icon: BarChart2 },

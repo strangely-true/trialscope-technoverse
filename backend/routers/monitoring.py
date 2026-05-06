@@ -46,12 +46,16 @@ monitoring_router = APIRouter(prefix="/monitoring", tags=["Monitoring"])
 
 
 @monitoring_router.get("/dropout/{trial_id}", response_model=List[DropoutScoreOut])
-def get_dropout_scores(trial_id: int, db: Session = Depends(get_db), current_user=Depends(require_coordinator)):
+def get_dropout_scores(trial_id: int, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
+    if current_user.role.value not in ("coordinator", "pharma"):
+        raise HTTPException(status_code=403, detail="Not authorized")
     return db.query(DropoutScore).filter(DropoutScore.trial_id == trial_id).order_by(DropoutScore.scored_at.desc()).all()
 
 
 @monitoring_router.get("/anomalies/{trial_id}", response_model=List[AnomalyAlertOut])
-def get_anomalies(trial_id: int, resolved: bool = False, db: Session = Depends(get_db), current_user=Depends(require_coordinator)):
+def get_anomalies(trial_id: int, resolved: bool = False, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
+    if current_user.role.value not in ("coordinator", "pharma"):
+        raise HTTPException(status_code=403, detail="Not authorized")
     return db.query(AnomalyAlert).filter(AnomalyAlert.trial_id == trial_id, AnomalyAlert.resolved == resolved).order_by(AnomalyAlert.created_at.desc()).all()
 
 

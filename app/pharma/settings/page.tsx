@@ -41,13 +41,8 @@ export default function PharmaSettingsPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Update failed");
-      if (!data.phone_verified && data.phone_number) {
-        setOtpStep(true);
-        toast.info("Verification code sent to your phone.");
-      } else {
-        setUserMe(data);
-        toast.success("Settings saved!");
-      }
+      setUserMe(data);
+      toast.success("Settings saved!");
     } catch (err: any) {
       toast.error(err.message);
     } finally {

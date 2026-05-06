@@ -48,13 +48,8 @@ export default function ProfilePage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Update failed");
-      if (!data.phone_verified && data.phone_number) {
-        setOtpStep(true);
-        toast.info("Verification code sent to your new phone number.");
-      } else {
-        setUserMe(data);
-        toast.success("Profile updated successfully!");
-      }
+      setUserMe(data);
+      toast.success("Profile updated successfully!");
     } catch (err: any) {
       toast.error(err.message);
     } finally {

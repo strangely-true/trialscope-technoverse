@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PageTransition } from "@/components/ui/page-transition";
 import { CheckCircle2, AlertCircle, ClipboardList } from "lucide-react";
@@ -16,15 +16,41 @@ const SYMPTOMS = [
 function SymptomLogContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const trialId = searchParams.get("trial") || "";
+  const [trialId, setTrialId] = useState(searchParams.get("trial") || "");
+  const [availableTrials, setAvailableTrials] = useState<any[]>([]);
 
   const [symptoms, setSymptoms] = useState({ fatigue: "0", pain: "0", nausea: "0", headache: "0", mood: "normal", notes: "" });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  useEffect(() => {
+    async function fetchMyTrials() {
+      try {
+        const token = localStorage.getItem("trialgo_token");
+        const res = await fetch("/api/patient/my-trial-info", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setAvailableTrials(data);
+          // Auto-select first trial if none in URL
+          if (!trialId && data.length > 0) {
+            setTrialId(data[0].trial.id.toString());
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch trials", err);
+      }
+    }
+    fetchMyTrials();
+  }, [trialId]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!trialId) { toast.error("No trial specified — open this from your trial page"); return; }
+    if (!trialId) { 
+      toast.error("Please select a trial to log symptoms for"); 
+      return; 
+    }
     setLoading(true);
     try {
       const token = localStorage.getItem("trialgo_token");
@@ -33,7 +59,10 @@ function SymptomLogContent() {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ trial_id: parseInt(trialId), symptoms_json: symptoms }),
       });
-      if (!res.ok) throw new Error(`Submission failed: ${res.status}`);
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.detail || `Submission failed: ${res.status}`);
+      }
       setSuccess(true);
       toast.success("Symptom log recorded!");
       setSymptoms({ fatigue: "0", pain: "0", nausea: "0", headache: "0", mood: "normal", notes: "" });
@@ -62,23 +91,43 @@ function SymptomLogContent() {
           </div>
         )}
 
-        {!trialId && (
+        {!trialId && availableTrials.length === 0 && (
           <div className="mb-6 flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700 dark:border-amber-800 dark:bg-amber-900/10 dark:text-amber-400">
-            <AlertCircle className="h-5 w-5 shrink-0" /> Please open this page from your trial card to log symptoms.
+            <AlertCircle className="h-5 w-5 shrink-0" /> 
+            You are not currently enrolled in any active trials. Please enroll in a trial first to log symptoms.
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-8 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          {/* Trial Selection (only if multiple or none selected) */}
+          {availableTrials.length > 0 && (
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300">🧬 Active Trial</label>
+              <select
+                value={trialId}
+                onChange={(e) => setTrialId(e.target.value)}
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:ring-blue-900/30"
+              >
+                <option value="" disabled>Select a trial...</option>
+                {availableTrials.map((t: any) => (
+                  <option key={t.trial.id} value={t.trial.id.toString()}>
+                    {t.trial.title} ({t.trial.disease})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {/* Sliders */}
           {SYMPTOMS.map(({ key, label, emoji }) => (
             <div key={key}>
               <div className="mb-2 flex items-center justify-between">
                 <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">{emoji} {label}</label>
-                <span className="text-sm font-bold text-blue-600 dark:text-blue-400">{symptoms[key]} / 10</span>
+                <span className="text-sm font-bold text-blue-600 dark:text-blue-400">{(symptoms as any)[key]} / 10</span>
               </div>
               <input
                 type="range" min="0" max="10"
-                value={symptoms[key]}
+                value={(symptoms as any)[key]}
                 onChange={(e) => setSymptoms((p) => ({ ...p, [key]: e.target.value }))}
                 className="w-full cursor-pointer accent-blue-600"
               />

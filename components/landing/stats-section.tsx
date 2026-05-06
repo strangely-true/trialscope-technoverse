@@ -23,7 +23,7 @@ export function StatsSection() {
             <div
               key={stat.label}
               className={cn(
-                "flex flex-col items-center rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md hover:shadow-blue-500/10",
+                "flex flex-col items-center rounded-2xl border border-slate-200/50 bg-white/40 p-8 text-center shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-blue-300/50 hover:bg-white/60 hover:shadow-md hover:shadow-blue-500/10",
                 isVisible
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-4"

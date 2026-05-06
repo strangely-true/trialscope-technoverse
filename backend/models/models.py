@@ -58,7 +58,7 @@ class User(Base):
     role = Column(SAEnum(UserRole), nullable=False, default=UserRole.patient)
     full_name = Column(String(255))
     phone_number = Column(String(20))
-    phone_verified = Column(Boolean, default=False)
+    phone_verified = Column(Boolean, default=True)
     is_active = Column(Boolean, default=True)
     preferred_language = Column(String(50), default="English")
     created_at = Column(DateTime(timezone=True), server_default=func.now())

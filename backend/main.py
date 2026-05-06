@@ -53,9 +53,11 @@ async def startup():
     from db.database import engine, Base
     import models.models  # ensure all models are imported before create_all
 
-    # create_all is idempotent — creates only missing tables
-    Base.metadata.create_all(bind=engine)
-    print("TrialGo backend started - all tables initialised")
+    try:
+        Base.metadata.create_all(bind=engine)
+        print("TrialGo backend started - all tables initialised")
+    except Exception as e:
+        print(f"WARNING: Could not initialise tables on startup: {e}\nBackend will start anyway — DB may be temporarily unavailable.")
 
 
 # ─── Routers ─────────────────────────────────────────────────────────────────
