@@ -69,7 +69,7 @@ function LoginForm() {
     <AuroraBackgroundAuth>
       <div className="flex min-h-screen items-center justify-center px-4 py-12">
         <PageTransition duration={300}>
-          <div className="w-full max-w-md">
+          <div className="w-[70vw] max-w-[620px]">
             {/* Logo */}
             <div className="mb-8 text-center">
               <Link
@@ -85,7 +85,7 @@ function LoginForm() {
                 </span>
               </Link>
               <h1 className="text-3xl font-bold text-slate-900 mt-6">
-                Welcome back
+                Welcome back!
               </h1>
               {registered && (
                 <div className="mt-4 inline-flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2">
@@ -98,7 +98,7 @@ function LoginForm() {
             </div>
 
             {/* Card Container */}
-            <div className="border border-slate-200 bg-white/90 rounded-2xl p-8 shadow-xl backdrop-blur-xl dark:border-slate-700 dark:bg-slate-800/80">
+            <div className="border border-slate-200 bg-white/90 rounded-2xl p-12 shadow-xl backdrop-blur-xl dark:border-slate-700 dark:bg-slate-800/80">
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 {/* Email Input */}
                 <div>
