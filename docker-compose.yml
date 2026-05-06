@@ -2,7 +2,6 @@ x-backend-common: &backend-common
   build:
     context: ./backend
     dockerfile: Dockerfile
-  image: trialscope-technoverse-backend:latest
   restart: unless-stopped
   env_file:
     - .env
