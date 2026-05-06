@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { useRouter, useParams, usePathname } from "next/navigation"
 
@@ -335,7 +336,8 @@ export default function PharmaCandidatesPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <nav className="flex items-center justify-between border-b border-slate-200 bg-white/95 px-6 py-4 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95">
         <Link href="/pharma/analytics" className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-white">
-          🧬 Trial<span className="text-blue-600 dark:text-blue-400">Go</span>
+          <Image src="/trialgo.png" alt="TrialGo" width={28} height={28} className="h-7 w-7" />
+          Trial<span className="text-blue-600 dark:text-blue-400">Go</span>
           <span className="text-xs text-slate-500 dark:text-slate-400">
             / Candidates
           </span>

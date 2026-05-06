@@ -218,7 +218,8 @@ export default function TrialsPage() {
       {/* Nav */}
       <nav className="flex items-center justify-between border-b border-slate-200 bg-white/95 px-6 py-4 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95">
         <Link href="/" className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-white">
-          🧬 Trial<span className="text-blue-600 dark:text-blue-400">Go</span>
+          <Image src="/trialgo.png" alt="TrialGo" width={28} height={28} className="h-7 w-7" />
+          Trial<span className="text-blue-600 dark:text-blue-400">Go</span>
         </Link>
         <div className="flex items-center gap-4">
           <Link
