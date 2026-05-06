@@ -2,7 +2,7 @@ name: Deploy to EC2 (Docker Compose)
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   deploy:
@@ -29,19 +29,60 @@ jobs:
               cd "$REPO_DIR"
             fi
 
-            echo "Writing .env from GitHub Secrets"
-            cat > .env <<'ENV'
+            echo "Merging GitHub Secrets into .env (preserve existing keys)"
+            # create a secrets-only env file (can include empty values if secret not set)
+            cat > .env.secrets <<'ENV'
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             REDIS_URL=${{ secrets.REDIS_URL }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_EXPIRE_MINUTES=${{ secrets.JWT_EXPIRE_MINUTES }}
             INTERNAL_API_URL=http://backend:8000
             NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
             TRIALGO_DOMAIN=${{ secrets.TRIALGO_DOMAIN }}
             NEXT_TELEMETRY_DISABLED=1
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_REGION=${{ secrets.AWS_REGION }}
+            S3_BUCKET_CONSENT=${{ secrets.S3_BUCKET_CONSENT }}
+            S3_BUCKET_REPORTS=${{ secrets.S3_BUCKET_REPORTS }}
+            S3_BUCKET_WEARABLE=${{ secrets.S3_BUCKET_WEARABLE }}
+            S3_BUCKET_FHIR=${{ secrets.S3_BUCKET_FHIR }}
+            TWILIO_ACCOUNT_SID=${{ secrets.TWILIO_ACCOUNT_SID }}
+            TWILIO_AUTH_TOKEN=${{ secrets.TWILIO_AUTH_TOKEN }}
+            TWILIO_PHONE_NUMBER=${{ secrets.TWILIO_PHONE_NUMBER }}
+            SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
+            SENDGRID_FROM_EMAIL=${{ secrets.SENDGRID_FROM_EMAIL }}
+            REDDIT_CLIENT_ID=${{ secrets.REDDIT_CLIENT_ID }}
+            REDDIT_CLIENT_SECRET=${{ secrets.REDDIT_CLIENT_SECRET }}
+            REDDIT_USERNAME=${{ secrets.REDDIT_USERNAME }}
+            REDDIT_PASSWORD=${{ secrets.REDDIT_PASSWORD }}
+            TWITTER_BEARER_TOKEN=${{ secrets.TWITTER_BEARER_TOKEN }}
+            FHIR_BASE_URL=${{ secrets.FHIR_BASE_URL }}
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+            GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
+            GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
+            HF_MODEL_NAME=${{ secrets.HF_MODEL_NAME }}
+            HF_TOKEN=${{ secrets.HF_TOKEN }}
+            FRONTEND_URL=${{ secrets.FRONTEND_URL }}
             ENV
 
-            cat > Caddyfile <<'CADDY'
-            {$TRIALGO_DOMAIN} {
+            # Remove empty-secret lines so absent secrets do NOT overwrite existing .env values
+            sed -i "/^[A-Z0-9_]\+=$/d" .env.secrets || true
+
+            # Merge: secrets override existing keys; existing keys not present in secrets are preserved
+            if [ -f .env ]; then
+              # keep lines from existing .env that do NOT have keys present in .env.secrets
+              awk -F= 'NR==FNR{keys[$1]=1; next} !($1 in keys) && NF>0{print $0}' .env.secrets .env > .env.preserved || true
+              cat .env.secrets .env.preserved > .env
+              rm -f .env.preserved .env.secrets
+            else
+              mv .env.secrets .env
+            fi
+
+            # Use the TRIALGO_DOMAIN secret for Caddyfile (empty if not set)
+            TRIALGO_DOMAIN="${{ secrets.TRIALGO_DOMAIN }}"
+            cat > Caddyfile <<CADDY
+            ${TRIALGO_DOMAIN} {
               encode gzip
 
               handle_path /api/* {

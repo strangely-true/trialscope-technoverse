@@ -400,10 +400,14 @@ async def call_patient(
     import os
     from twilio.rest import Client
 
-    client = Client(
-        os.getenv("TWILIO_ACCOUNT_SID"),
-        os.getenv("TWILIO_AUTH_TOKEN")
-    )
+    # Ensure Twilio credentials are present; provide a clear HTTP error if not.
+    tw_sid = os.getenv("TWILIO_ACCOUNT_SID")
+    tw_token = os.getenv("TWILIO_AUTH_TOKEN")
+    tw_phone = os.getenv("TWILIO_PHONE_NUMBER")
+    if not (tw_sid and tw_token and tw_phone):
+        raise HTTPException(status_code=503, detail="Twilio is not configured on the server. Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_PHONE_NUMBER.")
+
+    client = Client(tw_sid, tw_token)
 
     patient_phone = patient_user.phone_number
     twiml_instructions = f'''<Response>
