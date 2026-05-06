@@ -36,24 +36,13 @@ def register(payload: UserRegister, db: Session = Depends(get_db)):
         phone_number=payload.phone_number,
         role=payload.role,
         preferred_language=payload.preferred_language,
+        phone_verified=True,
     )
     db.add(user)
     db.commit()
     db.refresh(user)
 
-    if user.phone_number:
-        try:
-            otp = str(random.randint(1000, 9999))
-            redis_client.setex(f"otp:{user.id}", 600, otp)
-            print(f"--- DEVELOPMENT OTP FOR {user.phone_number}: {otp} ---")
-            client = Client(os.getenv("TWILIO_ACCOUNT_SID"), os.getenv("TWILIO_AUTH_TOKEN"))
-            client.messages.create(
-                body=f"Your TrialGo verification code is {otp}. Valid for 10 minutes.",
-                from_=os.getenv("TWILIO_PHONE_NUMBER"),
-                to=user.phone_number
-            )
-        except Exception as e:
-            print(f"Twilio error: {e}")
+    return user
 
     return user
 
@@ -111,24 +100,12 @@ def update_me(payload: UserUpdate, db: Session = Depends(get_db), current_user: 
     phone_changed = False
     if payload.phone_number is not None and payload.phone_number != current_user.phone_number:
         current_user.phone_number = payload.phone_number
-        current_user.phone_verified = False
+        current_user.phone_verified = True
         phone_changed = True
         
     db.commit()
     db.refresh(current_user)
 
-    if phone_changed and current_user.phone_number:
-        try:
-            otp = str(random.randint(1000, 9999))
-            redis_client.setex(f"otp:{current_user.id}", 600, otp)
-            print(f"--- DEVELOPMENT OTP FOR {current_user.phone_number}: {otp} ---")
-            client = Client(os.getenv("TWILIO_ACCOUNT_SID"), os.getenv("TWILIO_AUTH_TOKEN"))
-            client.messages.create(
-                body=f"Your TrialGo verification code is {otp}. Valid for 10 minutes.",
-                from_=os.getenv("TWILIO_PHONE_NUMBER"),
-                to=current_user.phone_number
-            )
-        except Exception as e:
-            print(f"Twilio error: {e}")
+    return current_user
 
     return current_user

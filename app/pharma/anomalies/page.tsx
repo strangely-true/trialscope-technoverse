@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { PageTransition } from "@/components/ui/page-transition";
-import { Activity, AlertTriangle, CheckCircle2, Clock, Filter } from "lucide-react";
+import { Activity, AlertTriangle, CheckCircle2, Clock, Filter, ArrowLeft } from "lucide-react";
+import { TrialGoLoaderInline } from "@/components/ui/trialgo-loader";
 
 interface Alert {
   id: number;
@@ -34,39 +36,34 @@ const TIER_STYLES: Record<string, { badge: string; border: string; row: string }
   },
 };
 
-export default function AnomaliesPage() {
+export default function PharmaAnomaliesPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const trialIdParam = searchParams.get("trial");
+  
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "unresolved" | "resolved">("unresolved");
+  const [filter, setFilter] = useState<"all" | "unresolved" | "resolved">("all");
   const [tierFilter, setTierFilter] = useState<"ALL" | "RED" | "AMBER" | "GREEN">("ALL");
 
   useEffect(() => {
     const token = localStorage.getItem("trialgo_token");
     if (!token) return;
 
-    // Load from first available trial
-    fetch("/api/trials", { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.ok ? r.json() : [])
-      .then((trials) => {
-        const trialId = Array.isArray(trials) && trials[0]?.id;
-        if (!trialId) { setLoading(false); return; }
-        return fetch(`/api/coordinator/anomalies/${trialId}`, { headers: { Authorization: `Bearer ${token}` } });
-      })
-      .then((r) => r && r.ok ? r.json() : [])
+    const trialId = trialIdParam;
+    if (!trialId) {
+      setLoading(false);
+      return;
+    }
+
+    fetch(`/api/monitoring/anomalies/${trialId}`, { 
+      headers: { Authorization: `Bearer ${token}` } 
+    })
+      .then((r) => (r.ok ? r.json() : []))
       .then((data) => setAlerts(Array.isArray(data) ? data : []))
       .catch(() => setAlerts([]))
       .finally(() => setLoading(false));
-  }, []);
-
-  const handleResolve = (id: number) => {
-    const token = localStorage.getItem("trialgo_token");
-    fetch(`/api/monitoring/anomalies/${id}/resolve`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-    }).then((r) => {
-      if (r.ok) setAlerts((prev) => prev.map((a) => a.id === id ? { ...a, resolved: true } : a));
-    });
-  };
+  }, [trialIdParam]);
 
   const filtered = alerts.filter((a) => {
     const statusMatch = filter === "all" || (filter === "unresolved" ? !a.resolved : a.resolved);
@@ -77,14 +74,21 @@ export default function AnomaliesPage() {
   return (
     <PageTransition>
       <div className="mx-auto max-w-4xl">
+        <button
+          onClick={() => router.back()}
+          className="mb-6 flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white"
+        >
+          <ArrowLeft className="h-4 w-4" /> Back to Analytics
+        </button>
+
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Activity className="h-6 w-6 text-blue-600" />
-              Anomaly Monitor
+              Anomaly Monitor (Pharma View)
             </h1>
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-              {alerts.filter((a) => !a.resolved).length} active alerts requiring attention
+              Review physiological outliers detected by AI agents for Trial #{trialIdParam}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -130,8 +134,8 @@ export default function AnomaliesPage() {
 
         {loading ? (
           <div className="flex h-64 flex-col items-center justify-center gap-4">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-            <p className="text-sm font-medium text-slate-500">Scanning for physiological outliers...</p>
+            <TrialGoLoaderInline />
+            <p className="text-sm font-medium text-slate-500">Fetching anomaly logs...</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex h-80 flex-col items-center justify-center gap-4 rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50/50 dark:border-slate-700 dark:bg-slate-800/20">
@@ -150,7 +154,7 @@ export default function AnomaliesPage() {
               return (
                 <div
                   key={alert.id}
-                  className={`group relative overflow-hidden rounded-2xl border p-5 transition-all hover:shadow-md ${
+                  className={`group relative overflow-hidden rounded-2xl border p-5 transition-all ${
                     alert.resolved ? "opacity-60 bg-slate-50 dark:bg-slate-900/50" : styles.row + " " + styles.border
                   }`}
                 >
@@ -169,7 +173,7 @@ export default function AnomaliesPage() {
                           </span>
                           {alert.resolved && (
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 uppercase">
-                              <CheckCircle2 className="h-3 w-3" /> Resolved
+                              <CheckCircle2 className="h-3 w-3" /> Resolved by Coordinator
                             </span>
                           )}
                         </div>
@@ -188,12 +192,9 @@ export default function AnomaliesPage() {
                       </div>
                     </div>
                     {!alert.resolved && (
-                      <button
-                        onClick={() => handleResolve(alert.id)}
-                        className="rounded-xl bg-slate-900 px-5 py-2 text-xs font-bold text-white transition-all hover:bg-blue-600 hover:shadow-lg hover:shadow-blue-500/20 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-blue-400"
-                      >
-                        Mark as Resolved
-                      </button>
+                      <div className="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-1.5 text-[10px] font-bold text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
+                        <Clock className="h-3 w-3" /> Awaiting Coordinator Review
+                      </div>
                     )}
                   </div>
                 </div>

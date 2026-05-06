@@ -81,6 +81,11 @@ export default function RegisterPage() {
         // Redirect by role
         router.push("/login?registered=1")
       }
+      // Redirect by role directly
+      if (role === "patient") router.push("/login?registered=1")
+      else if (role === "coordinator")
+        router.push("/coordinator/login?registered=1")
+      else router.push("/pharma/login?registered=1")
     } catch (err: any) {
       setError(err.message)
     } finally {

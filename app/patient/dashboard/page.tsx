@@ -94,12 +94,20 @@ export default function PatientDashboardPage() {
                 Here's an overview of your clinical trial participation.
               </p>
             </div>
-            <Link
-              href="/trials"
-              className="flex items-center gap-2 rounded-xl border border-blue-600 px-4 py-2 text-sm font-semibold text-blue-600 transition-colors hover:bg-blue-50 dark:hover:bg-slate-800"
-            >
-              <BookOpen className="h-4 w-4" /> Browse Trials
-            </Link>
+            <div className="flex gap-3">
+              <Link
+                href="/patient/wearables"
+                className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              >
+                <Activity className="h-4 w-4" /> Sync Wearables
+              </Link>
+              <Link
+                href="/trials"
+                className="flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                <BookOpen className="h-4 w-4" /> Browse Trials
+              </Link>
+            </div>
           </div>
 
           {/* Stat Cards with animated counters */}
