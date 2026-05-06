@@ -1,9 +1,7 @@
-FROM python:3.13-slim
+FROM python:3.13-slim AS builder
 
 WORKDIR /app
 
-# Install dependencies (no build-essential since we removed C-ext libs)
-# But it's good practice to have it just in case
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libpq-dev \
@@ -11,11 +9,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+FROM python:3.13-slim AS runtime
+
+WORKDIR /app
+
+ENV PATH="/opt/venv/bin:$PATH"
+ENV PYTHONUNBUFFERED=1
+
+COPY --from=builder /opt/venv /opt/venv
+COPY --from=builder /app /app
+
 EXPOSE 8000
 
-# Copy the start script (create it in docker-compose command)
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "start.py"]

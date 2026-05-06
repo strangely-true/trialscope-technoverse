@@ -6,10 +6,10 @@ ARG INTERNAL_API_URL=http://127.0.0.1:8000
 ENV INTERNAL_API_URL=${INTERNAL_API_URL}
 
 # Copy package files
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
 # Install all dependencies including devDependencies for build
-RUN npm install
+RUN npm ci
 
 # Copy source
 COPY . .
