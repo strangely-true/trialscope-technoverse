@@ -24,7 +24,6 @@ WORKDIR /app
 
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
-ENV INTERNAL_API_URL=http://127.0.0.1:8000
 
 # Copy necessary files from builder
 COPY --from=builder /app/next.config.mjs ./
