@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { AuroraBackgroundAuth } from "@/components/ui/aurora-background"
@@ -127,7 +128,7 @@ export default function RegisterPage() {
                 href="/"
                 className="inline-flex items-center gap-2 transition-opacity hover:opacity-80"
               >
-                <span className="text-2xl">🧬</span>
+                <Image src="/trialgo.png" alt="TrialGo" width={40} height={40} className="h-10 w-10" />
                 <span className="text-slate-900 text-2xl font-bold">
                   Trial
                   <span className="text-blue-600">

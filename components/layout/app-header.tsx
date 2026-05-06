@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { LogOut, Menu, Bell, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -55,7 +56,7 @@ export function AppHeader({ role, userName = "User", onMenuClick }: AppHeaderPro
           href="/"
           className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors dark:text-slate-400 dark:hover:text-white"
         >
-          <span className="text-base">🧬</span>
+          <img src="/trialgo.png" alt="TrialGo Logo" className="h-8 w-8 rounded-lg" />
           <span className="hidden text-sm font-semibold md:block text-slate-900 dark:text-white">
             Trial<span className="text-blue-600 dark:text-blue-400">Go</span>
           </span>

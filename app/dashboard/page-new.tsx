@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { PageTransition } from "@/components/ui/page-transition"
@@ -125,7 +126,7 @@ export default function DashboardPage() {
             href="/"
             className="inline-flex items-center gap-2 transition-opacity hover:opacity-80"
           >
-            <span className="text-2xl">🧬</span>
+            <Image src="/trialgo.png" alt="TrialGo" width={36} height={36} className="h-9 w-9" />
             <span className="text-text-primary dark:text-text-primary text-lg font-bold">
               Trial
               <span className="text-secondary-600 dark:text-secondary-400">

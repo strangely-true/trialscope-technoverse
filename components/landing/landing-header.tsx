@@ -34,9 +34,7 @@ export function LandingHeader() {
         >
           {/* Logo */}
           <Link href="/" className="group flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-950 transition-transform group-hover:scale-110">
-              <ActivitySquare className="h-5 w-5 text-white" />
-            </div>
+            <img src="/trialgo.png" alt="TrialGo Logo" className="h-8 w-8 rounded-lg transition-transform group-hover:scale-110" />
             <span className="text-lg font-bold tracking-tight text-slate-900">
               Trial<span className="text-blue-600">Go</span>
             </span>
