@@ -36,8 +36,23 @@ jobs:
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             INTERNAL_API_URL=http://backend:8000
             NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+            TRIALGO_DOMAIN=${{ secrets.TRIALGO_DOMAIN }}
             NEXT_TELEMETRY_DISABLED=1
             ENV
+
+            cat > Caddyfile <<'CADDY'
+            {$TRIALGO_DOMAIN} {
+              encode gzip
+
+              handle_path /api/* {
+                reverse_proxy backend:8000
+              }
+
+              handle {
+                reverse_proxy frontend:3000
+              }
+            }
+            CADDY
 
             # Ensure docker & docker compose are available on the instance
             docker --version || (echo 'docker not found, aborting' && exit 1)
@@ -49,5 +64,5 @@ jobs:
             docker builder prune -af || true
 
             # Restart the stack (build images on the EC2 host)
-            docker compose down || true
-            docker compose up -d --build
+            docker compose --profile caddy down || true
+            docker compose --profile caddy up -d --build

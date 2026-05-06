@@ -7,28 +7,11 @@ x-backend-common: &backend-common
   env_file:
     - .env
   environment:
-    - DATABASE_URL=postgresql://trialgo_user:trialgo_pass@postgres:5432/trialgo
     - REDIS_URL=redis://redis:6379/0
     - CELERY_RESULT_BACKEND=redis://redis:6379/0
     - FRONTEND_URL=http://localhost:3000
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: trialgo_user
-      POSTGRES_PASSWORD: trialgo_pass
-      POSTGRES_DB: trialgo
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U trialgo_user -d trialgo"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
   redis:
     image: redis:7-alpine
     restart: unless-stopped
@@ -48,8 +31,6 @@ services:
       - "8000:8000"
     command: python start.py
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_healthy
     healthcheck:
@@ -82,11 +63,12 @@ services:
       dockerfile: Dockerfile.frontend
       args:
         INTERNAL_API_URL: http://backend:8000
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
     restart: unless-stopped
     env_file:
       - .env
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
       - INTERNAL_API_URL=http://backend:8000
     ports:
       - "3000:3000"
@@ -94,6 +76,27 @@ services:
       backend:
         condition: service_healthy
 
+  caddy:
+    image: caddy:2-alpine
+    profiles:
+      - caddy
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+
 volumes:
-  postgres_data:
   redis-data:
+  caddy_data:
+  caddy_config:
