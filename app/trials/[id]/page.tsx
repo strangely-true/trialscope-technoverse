@@ -77,11 +77,71 @@ export default function TrialDetailPage() {
 
   const consentFields = extractConsentFields(consentTemplate?.consent_template_text ?? "")
 
+  function renderConsentPreview(text: string, values: Record<string, string>) {
+    return (
+      text || ""
+    ).replace(/\[\[([^\]]+)\]\]|\{\{([^}]+)\}\}/g, (_m, g1, g2) => {
+      const raw = (g1 || g2 || "").trim()
+      const key = raw.toLowerCase().replace(/\s+/g, "_")
+      return values[key] ?? ""
+    })
+  }
+
+  const openSignedConsentPdf = async () => {
+    if (!consentSubmission) {
+      setConsentError("Sign the consent first to view the signed PDF")
+      return
+    }
+
+    const token = localStorage.getItem("trialgo_token")
+    if (!token) {
+      router.push("/login")
+      return
+    }
+
+    setConsentError("")
+    try {
+      const response = await fetch(
+        `/api/consent/download/${trialId}/${consentSubmission.hash_id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error(`Signed PDF download failed: ${response.status}`)
+      }
+
+      const blob = await response.blob()
+      const objectUrl = window.URL.createObjectURL(blob)
+      const preview = window.open(objectUrl, "_blank", "noopener,noreferrer")
+
+      if (!preview) {
+        const anchor = document.createElement("a")
+        anchor.href = objectUrl
+        anchor.download = `consent-${trialId}-${consentSubmission.hash_id}.pdf`
+        document.body.appendChild(anchor)
+        anchor.click()
+        anchor.remove()
+      }
+
+      window.setTimeout(() => window.URL.revokeObjectURL(objectUrl), 60_000)
+    } catch (err: any) {
+      setConsentError(err.message || "Could not open signed PDF")
+    }
+  }
+
   function extractConsentFields(text: string) {
     const fields = Array.from(
       new Set(
         (text.match(/\[\[([^\]]+)\]\]|\{\{([^}]+)\}\}/g) ?? [])
-          .map((match) => match.replace(/^\[\[|\]\]$|^\{\{|\}\}$/g, "").trim())
+          .map((match) =>
+            match
+              .replace(/^\[\[|\]\]$|^\{\{|\}\}$/g, "")
+              .trim()
+              .toLowerCase()
+              .replace(/\s+/g, "_")
+          )
           .filter(Boolean)
       )
     )
@@ -481,7 +541,7 @@ export default function TrialDetailPage() {
             </div>
 
             <div className="mb-4 whitespace-pre-wrap rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm leading-relaxed text-slate-600 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400">
-              {consentTemplate.consent_template_text}
+              {renderConsentPreview(consentTemplate.consent_template_text, consentInputs)}
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -528,13 +588,25 @@ export default function TrialDetailPage() {
             {consentMessage && (
               <div className="mt-4 rounded-lg bg-emerald-50 p-4 text-sm text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
                 {consentMessage}
-                {consentSubmission?.signed_pdf_url ? (
-                  <div style={{ marginTop: "0.5rem" }}>
-                    <a href={consentSubmission.signed_pdf_url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline dark:text-blue-400">
-                      Open signed PDF
+                <div className="mt-3 flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={openSignedConsentPdf}
+                    className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-emerald-700"
+                  >
+                    View signed PDF
+                  </button>
+                  {consentSubmission?.signed_pdf_url ? (
+                    <a
+                      href={consentSubmission.signed_pdf_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded-lg border border-emerald-200 px-4 py-2 text-xs font-semibold text-emerald-700 hover:border-emerald-300 hover:bg-emerald-50 dark:border-emerald-900/50 dark:text-emerald-400 dark:hover:bg-emerald-900/20"
+                    >
+                      Open stored PDF
                     </a>
-                  </div>
-                ) : null}
+                  ) : null}
+                </div>
               </div>
             )}
 

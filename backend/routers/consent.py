@@ -53,12 +53,27 @@ def _extract_pdf_text(pdf_bytes: bytes) -> str:
 
 def _extract_fields(template_text: str) -> list[str]:
     matches = re.findall(r"\[\[([^\]]+)\]\]|\{\{([^}]+)\}\}", template_text or "")
-    fields = []
+    fields: list[str] = []
     for left, right in matches:
-        field_name = left or right
+        raw = (left or right or "").strip()
+        # normalize: lowercase, spaces -> underscore
+        field_name = re.sub(r"\s+", "_", raw).lower()
         if field_name and field_name not in fields:
             fields.append(field_name)
     return fields
+
+
+def _render_template_with_values(template_text: str, values: dict) -> str:
+    """Replace [[name]] or {{name}} placeholders in template_text with provided values.
+    Normalizes placeholder keys the same way as _extract_fields (lowercase, underscores).
+    """
+    def _lookup(match):
+        raw = (match.group(1) or match.group(2) or "").strip()
+        key = re.sub(r"\s+", "_", raw).lower()
+        val = values.get(key)
+        return str(val) if val is not None else ""
+
+    return re.sub(r"\[\[([^\]]+)\]\]|\{\{([^}]+)\}\}", _lookup, template_text or "")
 
 
 def _template_text_for_trial(trial: Trial) -> str:
@@ -115,7 +130,9 @@ def _signed_pdf_lines(trial: Trial, submission: ConsentSubmission, template_text
         "",
         "Template:",
     ]
-    lines.extend((template_text or DEFAULT_CONSENT_TEMPLATE).splitlines())
+    # Render template with submitted field values so the PDF shows filled fields inline
+    rendered = _render_template_with_values(template_text or DEFAULT_CONSENT_TEMPLATE, submission.field_values or {})
+    lines.extend(rendered.splitlines())
     lines.append("")
     lines.append("Submitted field values:")
     for key, value in (submission.field_values or {}).items():
