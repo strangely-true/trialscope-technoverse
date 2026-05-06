@@ -1,0 +1,53 @@
+name: Deploy to EC2 (Docker Compose)
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            set -euo pipefail
+            REPO_DIR=~/trialscope-technoverse
+
+            if [ -d "$REPO_DIR/.git" ]; then
+              cd "$REPO_DIR"
+              git fetch --all
+              git reset --hard origin/main
+            else
+              git clone https://github.com/strangely-true/trialscope-technoverse.git "$REPO_DIR"
+              cd "$REPO_DIR"
+            fi
+
+            echo "Writing .env from GitHub Secrets"
+            cat > .env <<'ENV'
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            REDIS_URL=${{ secrets.REDIS_URL }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            INTERNAL_API_URL=http://backend:8000
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+            NEXT_TELEMETRY_DISABLED=1
+            ENV
+
+            # Ensure docker & docker compose are available on the instance
+            docker --version || (echo 'docker not found, aborting' && exit 1)
+            docker compose version || (echo 'docker compose not found, aborting' && exit 1)
+
+            # Free stale build layers before rebuilding on the EC2 host.
+            docker compose down --remove-orphans || true
+            docker image prune -af || true
+            docker builder prune -af || true
+
+            # Restart the stack (build images on the EC2 host)
+            docker compose down || true
+            docker compose up -d --build
